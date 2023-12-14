@@ -1,17 +1,28 @@
 #pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "../Callback.h"
 #include "../mgl/mgl.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 class SceneNode {
+private:
+    glm::mat4* modelMatrix;             // Pointer to a model matrix
+    mgl::ShaderProgram* shader;         // Pointer to a shader program
+    mgl::Mesh* mesh;                    // Pointer to a mesh
+    std::vector<SceneNode*> children;   // Vector of children nodes
+    SceneNode* parent;                   // Pointer to the parent node
+    Callback* callback;                 // Optional callback
+
 public:
-    mgl::Mesh* mesh;
-    mgl::ShaderProgram* shader;
-    glm::mat4 modelMatrix;
+    // Constructor
+    SceneNode(glm::mat4* model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb = nullptr);
 
-    SceneNode(mgl::Mesh* mesh, mgl::ShaderProgram* shader, const glm::mat4& modelMatrix = glm::mat4(1.0f))
-        : mesh(mesh), shader(shader), modelMatrix(modelMatrix) {}
+    // Destructor
+    ~SceneNode();
 
-    void draw(GLuint ColorId, glm::vec4 color);
+    // Add a child node
+    void addChild(SceneNode* child);
+
+    // Draw method
+    void draw();
 };
 
