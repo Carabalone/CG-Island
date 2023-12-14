@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "./mgl/mgl.hpp"
+#include "../mgl/mgl.hpp"
 
 class SceneNode {
 public:

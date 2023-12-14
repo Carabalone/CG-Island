@@ -16,10 +16,10 @@
 #include "../mgl/mgl.hpp"
 #include <iomanip> 
 #include <direct.h>
-#include "../sceneNode.h"
+#include "../utils/sceneNode.h"
 #define GetCurrentDir _getcwd
-#include "../CameraManager.h"
-#include "../InputManager.h"
+#include "../utils/CameraManager.h"
+#include "../utils/InputManager.h"
 
 ////////////////////////////////////////////////////////////////////////// MYAPP
 

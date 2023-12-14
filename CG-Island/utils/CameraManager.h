@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <array>
-#include "mgl/mgl.hpp"
+#include "../mgl/mgl.hpp"
 
 #ifndef CAMERA_MANAGER_H
 #define CAMERA_MANAGER_H

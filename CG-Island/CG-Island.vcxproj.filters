@@ -15,32 +15,58 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="tangram\main.cpp">
+    <None Include="mgl\Makefile" />
+    <None Include="assets\shaders\clip-fs.glsl" />
+    <None Include="assets\shaders\clip-vs.glsl" />
+    <None Include="assets\shaders\cube-fs.glsl" />
+    <None Include="assets\shaders\cube-vs.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="utils\CameraManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\SceneNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mesh-loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mgl\mglApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mgl\mglCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="mgl\mglError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mgl\mglMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mgl\mglShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Piece.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="mgl\Makefile" />
-    <None Include="clip-fs.glsl" />
-    <None Include="clip-vs.glsl" />
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="utils\CameraManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\sceneNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="mgl\mgl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mgl\mglApp.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mgl\mglCamera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mgl\mglConventions.hpp">
@@ -49,10 +75,13 @@
     <ClInclude Include="mgl\mglError.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mgl\mglShader.hpp">
+    <ClInclude Include="mgl\mglMesh.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Piece.h">
+    <ClInclude Include="mgl\mglScenegraph.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mgl\mglShader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

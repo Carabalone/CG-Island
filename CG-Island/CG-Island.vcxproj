@@ -104,17 +104,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glew\include;$(SolutionDir)dependencies\glm;$(SolutionDir)dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\assimp\include;$(SolutionDir)dependencies\glew\include;$(SolutionDir)dependencies\glm;$(SolutionDir)dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\Release\x64;$(SolutionDir)dependencies\glfw\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\Release\x64;$(SolutionDir)dependencies\assimp\lib\x64;$(SolutionDir)dependencies\glfw\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3dll.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(SolutionDir)dependencies\glew\bin\Release\x64\glew32.dll $(OutDir)
-xcopy /y $(SolutionDir)dependencies\glfw\lib-vc2022\glfw3.dll $(OutDir)</Command>
+xcopy /y $(SolutionDir)dependencies\glfw\lib-vc2022\glfw3.dll $(OutDir)
+xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,40 +126,52 @@ xcopy /y $(SolutionDir)dependencies\glfw\lib-vc2022\glfw3.dll $(OutDir)</Command
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\glew\include;$(SolutionDir)dependencies\glm;$(SolutionDir)dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)dependencies\assimp\include;$(SolutionDir)dependencies\glew\include;$(SolutionDir)dependencies\glm;$(SolutionDir)dependencies\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\Release\x64;$(SolutionDir)dependencies\glfw\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)dependencies\glew\lib\Release\x64;$(SolutionDir)dependencies\assimp\lib\x64;$(SolutionDir)dependencies\glfw\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3dll.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y $(SolutionDir)dependencies\glew\bin\Release\x64\glew32.dll $(OutDir)
-xcopy /y $(SolutionDir)dependencies\glfw\lib-vc2022\glfw3.dll $(OutDir)</Command>
+xcopy /y $(SolutionDir)dependencies\glfw\lib-vc2022\glfw3.dll $(OutDir)
+xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="mgl\mglApp.cpp" />
-    <ClCompile Include="mgl\mglError.cpp" />
-    <ClCompile Include="mgl\mglShader.cpp" />
-    <ClCompile Include="Piece.cpp" />
-    <ClCompile Include="tangram\main.cpp" />
+    <None Include="assets\shaders\clip-fs.glsl" />
+    <None Include="assets\shaders\clip-vs.glsl" />
+    <None Include="assets\shaders\cube-fs.glsl" />
+    <None Include="assets\shaders\cube-vs.glsl" />
+    <None Include="mgl\Makefile" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="clip-fs.glsl" />
-    <None Include="clip-vs.glsl" />
-    <None Include="mgl\Makefile" />
+    <ClCompile Include="mgl\mglApp.cpp" />
+    <ClCompile Include="mgl\mglCamera.cpp" />
+    <ClCompile Include="mgl\mglError.cpp" />
+    <ClCompile Include="mgl\mglMesh.cpp" />
+    <ClCompile Include="mgl\mglShader.cpp" />
+    <ClCompile Include="src\mesh-loader.cpp" />
+    <ClCompile Include="utils\CameraManager.cpp" />
+    <ClCompile Include="utils\InputManager.cpp" />
+    <ClCompile Include="utils\SceneNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mgl\mgl.hpp" />
     <ClInclude Include="mgl\mglApp.hpp" />
+    <ClInclude Include="mgl\mglCamera.hpp" />
     <ClInclude Include="mgl\mglConventions.hpp" />
     <ClInclude Include="mgl\mglError.hpp" />
+    <ClInclude Include="mgl\mglMesh.hpp" />
+    <ClInclude Include="mgl\mglScenegraph.hpp" />
     <ClInclude Include="mgl\mglShader.hpp" />
-    <ClInclude Include="Piece.h" />
+    <ClInclude Include="utils\CameraManager.h" />
+    <ClInclude Include="utils\InputManager.h" />
+    <ClInclude Include="utils\sceneNode.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
