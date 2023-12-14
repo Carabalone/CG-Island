@@ -161,6 +161,7 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClCompile Include="utils\SceneNode.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Callback.h" />
     <ClInclude Include="mgl\mgl.hpp" />
     <ClInclude Include="mgl\mglApp.hpp" />
     <ClInclude Include="mgl\mglCamera.hpp" />
