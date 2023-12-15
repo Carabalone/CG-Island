@@ -1,5 +1,7 @@
 #include "CameraManager.h"
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/common.hpp>
+#include "utils.h"
 
 CameraManager::CameraManager(GLuint bindingpoint) : isOrtho(false)
 {
@@ -71,12 +73,14 @@ void CameraManager::sendMatrices() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void CameraManager::updateCameraRadius(float scrollDelta) {
+void CameraManager::updateCameraZoom(float scrollDelta) {
 
 	mgl::Camera* currentCamera = getCurrentCamera();
 
-	float currentRadius = currentCamera->getRadius();
-	float newRadius = currentRadius - scrollDelta;
+	float zoomFactor = scrollDelta < 0.0f ? 0.7f : 1.5f;
+	glm::mat4 zoomMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(zoomFactor, zoomFactor, 1.0f));
+	glm::mat4 zoomedOrthoProjection = currentCamera->getProjectionMatrix() * zoomMatrix;
 
-	currentCamera->setRadius(newRadius);
+	currentCamera->setProjectionMatrix(zoomedOrthoProjection);
+
 }

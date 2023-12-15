@@ -22,7 +22,7 @@ public:
 	bool checkOrtho();
 	CameraManager(GLuint bindingpoint);
 	void sendMatrices();
-	void updateCameraRadius(float scrollDelta);
+	void updateCameraZoom(float scrollDelta);
 };
 
 #endif // CAMERA_MANAGER_H

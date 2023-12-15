@@ -155,13 +155,14 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClCompile Include="mgl\mglError.cpp" />
     <ClCompile Include="mgl\mglMesh.cpp" />
     <ClCompile Include="mgl\mglShader.cpp" />
-    <ClCompile Include="src\mesh-loader.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="utils\Callback.cpp" />
     <ClCompile Include="utils\CameraManager.cpp" />
     <ClCompile Include="utils\InputManager.cpp" />
     <ClCompile Include="utils\SceneNode.cpp" />
+    <ClCompile Include="utils\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Callback.h" />
     <ClInclude Include="mgl\mgl.hpp" />
     <ClInclude Include="mgl\mglApp.hpp" />
     <ClInclude Include="mgl\mglCamera.hpp" />
@@ -170,6 +171,8 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClInclude Include="mgl\mglMesh.hpp" />
     <ClInclude Include="mgl\mglScenegraph.hpp" />
     <ClInclude Include="mgl\mglShader.hpp" />
+    <ClInclude Include="utils.h" />
+    <ClInclude Include="utils\Callback.h" />
     <ClInclude Include="utils\CameraManager.h" />
     <ClInclude Include="utils\InputManager.h" />
     <ClInclude Include="utils\sceneNode.h" />
