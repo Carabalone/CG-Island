@@ -143,10 +143,9 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\.gitignore" />
     <None Include="assets\shaders\clip-fs.glsl" />
     <None Include="assets\shaders\clip-vs.glsl" />
-    <None Include="assets\shaders\cube-fs.glsl" />
-    <None Include="assets\shaders\cube-vs.glsl" />
     <None Include="mgl\Makefile" />
   </ItemGroup>
   <ItemGroup>
@@ -161,7 +160,6 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClCompile Include="utils\SceneNode.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Callback.h" />
     <ClInclude Include="mgl\mgl.hpp" />
     <ClInclude Include="mgl\mglApp.hpp" />
     <ClInclude Include="mgl\mglCamera.hpp" />

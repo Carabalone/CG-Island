@@ -5,16 +5,24 @@
 
 class SceneNode {
 private:
-    glm::mat4* modelMatrix;             // Pointer to a model matrix
+public:
+    glm::mat4 modelMatrix;             // Pointer to a model matrix
     mgl::ShaderProgram* shader;         // Pointer to a shader program
     mgl::Mesh* mesh;                    // Pointer to a mesh
     std::vector<SceneNode*> children;   // Vector of children nodes
-    SceneNode* parent;                   // Pointer to the parent node
     Callback* callback;                 // Optional callback
+    SceneNode* parent;                   // Pointer to the parent node
 
 public:
     // Constructor
-    SceneNode(glm::mat4* model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb = nullptr);
+    SceneNode(glm::mat4 model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb = nullptr);
+    inline SceneNode() {
+		modelMatrix = glm::mat4(1.0f);
+		shader = nullptr;
+		mesh = nullptr;
+		callback = nullptr;
+		parent = nullptr;   
+    }
 
     // Destructor
     ~SceneNode();
@@ -24,5 +32,6 @@ public:
 
     // Draw method
     void draw();
+    mgl::ShaderProgram* getParentShader();
 };
 

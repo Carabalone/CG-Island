@@ -18,8 +18,7 @@
     <None Include="mgl\Makefile" />
     <None Include="assets\shaders\clip-fs.glsl" />
     <None Include="assets\shaders\clip-vs.glsl" />
-    <None Include="assets\shaders\cube-fs.glsl" />
-    <None Include="assets\shaders\cube-vs.glsl" />
+    <None Include="..\.gitignore" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils\CameraManager.cpp">
@@ -82,9 +81,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mgl\mglShader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Callback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

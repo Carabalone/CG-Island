@@ -80,7 +80,7 @@ void MyApp::createMesh(int currentPiece, std::string mesh_file) {
   Mesh->joinIdenticalVertices();
   Mesh->create(mesh_fullname);
 
-  sceneGraph.emplace_back(Mesh, Shaders, glm::mat4(1.0f));
+  sceneGraph.emplace_back(SceneNode(glm::mat4(1.0f), Shaders, Mesh));
 }
 
 void MyApp::createMeshes() { 
@@ -88,9 +88,9 @@ void MyApp::createMeshes() {
     createMesh(1, "triangle.obj");
     createMesh(2, "paralelogram.obj");
 
-    sceneGraph[0].modelMatrix = glm::translate(glm::vec3(3.0f, 0.0f, 0.0f));
-    sceneGraph[1].modelMatrix = glm::translate(glm::vec3(-3.0f, 0.0f, 0.0f));
-    sceneGraph[2].modelMatrix = glm::translate(glm::vec3(0.0f, 0.0f, 0.0f));
+    sceneGraph[0].modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f));
+    sceneGraph[1].modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, 0.0f));
+    sceneGraph[2].modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 ///////////////////////////////////////////////////////////////////////// SHADER
@@ -216,7 +216,7 @@ glm::mat4 ModelMatrix(1.0f);
 void MyApp::drawScene() {
 	cameraManager->sendMatrices();
     for (int i = 0; i < sceneGraph.size(); i++) {
-		sceneGraph[i].draw(ColorId, glm::vec4(0.75f, 0.2f, 0.1f, 0.0f));
+		sceneGraph[i].draw();
 	}
 }
 
