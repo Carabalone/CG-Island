@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 
 SceneNode::SceneNode(glm::mat4 model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb)
-	: modelMatrix(model), shader(shader), mesh(mesh), parent(nullptr), callback(cb) {}
+	: modelMatrix(model), shader(shader), mesh(mesh), parent(nullptr), callback(cb), worldMatrix(model) {}
 
 SceneNode::~SceneNode() {
 	for (SceneNode* child : children) {
@@ -21,12 +21,14 @@ void SceneNode::draw() {
 	}
 	//GLuint ColorId = 1;
 	glm::vec4 color(1.0f);
+	glm::mat4 worldMatrix(1.0f);
 
 	shader = shader ? shader : getParentShader();
 
 	if (mesh && shader) {
 		shader->bind();
-		glUniformMatrix4fv(shader->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->modelMatrix));
+		updateModelMatrices();
+		glUniformMatrix4fv(shader->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
 		//glUniform4fv(ColorId, 1, glm::value_ptr(color));
 		mesh->draw();
 		shader->unbind();
@@ -52,3 +54,17 @@ mgl::ShaderProgram* SceneNode::getParentShader()
 	}
 	return nullptr;
 }
+
+void SceneNode::updateModelMatrices() {
+	if (parent != nullptr) {
+		worldMatrix = parent->worldMatrix * modelMatrix;
+	}
+	else {
+		worldMatrix = modelMatrix;
+	}
+
+	for (SceneNode* child : children) {
+		child->updateModelMatrices();
+	}
+}
+

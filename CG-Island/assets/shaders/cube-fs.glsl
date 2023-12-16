@@ -10,7 +10,7 @@ out vec4 FragmentColor;
 void main(void)
 {
     vec3 normalizedNormal = normalize(exNormal);
-    vec3 modifiedColor = 0.25 * normalizedNormal;
+    vec3 modifiedColor = 0.5 * normalizedNormal;
     FragmentColor = exColor + vec4(modifiedColor, 1.0);
 }
 

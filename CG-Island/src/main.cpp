@@ -48,7 +48,8 @@ private:
 	InputManager inputManager = InputManager();
 	std::unordered_map<std::string, SceneNode> sceneGraph;
 
-	void createMesh(std::string name, std::string mesh_file);
+	//void createMesh(std::string name, std::string mesh_file);
+	mgl::Mesh* createMesh(std::string mesh_file);
 	void createMeshes();
 	void createShaderPrograms(std::string mesh);
 	void createAllShaderPrograms();
@@ -72,7 +73,7 @@ void print_mat4(const glm::mat4& matrix, std::string matrixName) {
 
 ///////////////////////////////////////////////////////////////////////// MESHES
 
-void MyApp::createMesh(std::string name, std::string mesh_file) {
+mgl::Mesh* MyApp::createMesh(std::string mesh_file) {
 	std::string mesh_dir = "assets/models/";
 	std::string mesh_fullname = mesh_dir + mesh_file;
 
@@ -80,13 +81,20 @@ void MyApp::createMesh(std::string name, std::string mesh_file) {
 	Mesh->joinIdenticalVertices();
 	Mesh->create(mesh_fullname);
 
-	sceneGraph.insert({ std::string(name), SceneNode(glm::mat4(1.0f), Shaders, Mesh) });
+	return Mesh;
+
+	//sceneGraph.insert({ std::string(name), SceneNode(glm::mat4(1.0f), Shaders, Mesh) });
 }
 
 void MyApp::createMeshes() {
-	createMesh("cube", "cube-bevel.obj");
 
-	sceneGraph.at("cube").modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	mgl::Mesh* mesh = createMesh("cube-bevel.obj");
+	sceneGraph.insert({ "cube", SceneNode(glm::mat4(1.0f), Shaders, mesh)});
+	sceneGraph.at("cube").modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f)) * glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	auto modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
+	mgl::Mesh* mesh2 = createMesh("cube-bevel.obj");
+	sceneGraph.at("cube").addChild(new SceneNode(modelMatrix, Shaders, mesh2));
 }
 
 ///////////////////////////////////////////////////////////////////////// SHADER
@@ -153,6 +161,10 @@ void MyApp::keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 
 	if (inputManager.isKeyPressed(GLFW_KEY_C)) {
 		cameraManager->switchCamera();
+	}
+
+	if (inputManager.isKeyPressed(GLFW_KEY_ESCAPE)) {
+		exit(0);
 	}
 }
 

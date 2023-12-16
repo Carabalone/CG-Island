@@ -12,6 +12,7 @@ public:
     std::vector<SceneNode*> children;   // Vector of children nodes
     Callback* callback;                 // Optional callback
     SceneNode* parent;                   // Pointer to the parent node
+    glm::mat4 worldMatrix;
 
 public:
     // Constructor
@@ -33,5 +34,6 @@ public:
     // Draw method
     void draw();
     mgl::ShaderProgram* getParentShader();
+    void updateModelMatrices();
 };
 
