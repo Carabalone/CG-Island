@@ -90,11 +90,11 @@ void MyApp::createMeshes() {
 
 	mgl::Mesh* mesh = createMesh("cube-bevel.obj");
 	sceneGraph.insert({ "cube", SceneNode(glm::mat4(1.0f), Shaders, mesh)});
-	sceneGraph.at("cube").modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(3.0f, 0.0f, 0.0f)) * glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	sceneGraph.at("cube").modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) /** glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f))*/;
 
-	auto modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
-	mgl::Mesh* mesh2 = createMesh("cube-bevel.obj");
-	sceneGraph.at("cube").addChild(new SceneNode(modelMatrix, Shaders, mesh2));
+	//auto modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
+	//mgl::Mesh* mesh2 = createMesh("cube-bevel.obj");
+	//sceneGraph.at("cube").addChild(new SceneNode(modelMatrix, Shaders, mesh2));
 }
 
 ///////////////////////////////////////////////////////////////////////// SHADER
