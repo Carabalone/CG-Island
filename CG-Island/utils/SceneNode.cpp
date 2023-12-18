@@ -24,12 +24,15 @@ void SceneNode::draw() {
 	glm::mat4 worldMatrix(1.0f);
 
 	shader = shader ? shader : getParentShader();
+	glm::vec3 lightDirection = glm::vec3(1.0f);
+	glm::vec3 lineColor = glm::vec3(0.0f);
 
 	if (mesh && shader) {
 		shader->bind();
 		updateModelMatrices();
 		glUniformMatrix4fv(shader->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
-		//glUniform4fv(ColorId, 1, glm::value_ptr(color));
+		glUniform3fv(shader->Uniforms["lightDir"].index, 1, glm::value_ptr(lightDirection));
+		glUniform3fv(shader->Uniforms["lineColor"].index, 1, glm::value_ptr(lineColor));
 		mesh->draw();
 		shader->unbind();
 	}

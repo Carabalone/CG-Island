@@ -20,6 +20,8 @@
     <None Include="assets\shaders\clip-vs.glsl" />
     <None Include="assets\shaders\cube-fs.glsl" />
     <None Include="assets\shaders\cube-vs.glsl" />
+    <None Include="assets\shaders\cel-shading.frag" />
+    <None Include="assets\shaders\cel-shading.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils\CameraManager.cpp">
@@ -29,9 +31,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utils\SceneNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\mesh-loader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mgl\mglApp.cpp">
@@ -47,6 +46,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mgl\mglShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Callback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,7 +92,10 @@
     <ClInclude Include="mgl\mglShader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Callback.h">
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Callback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

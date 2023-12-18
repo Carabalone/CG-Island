@@ -88,9 +88,9 @@ mgl::Mesh* MyApp::createMesh(std::string mesh_file) {
 
 void MyApp::createMeshes() {
 
-	mgl::Mesh* mesh = createMesh("cube-bevel.obj");
-	sceneGraph.insert({ "cube", SceneNode(glm::mat4(1.0f), Shaders, mesh)});
-	sceneGraph.at("cube").modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) /** glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f))*/;
+	mgl::Mesh* mesh = createMesh("testsphere.obj");
+	sceneGraph.insert({ "testsphere.obj", SceneNode(glm::mat4(1.0f), Shaders, mesh)});
+	sceneGraph.at("testsphere.obj").modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) /** glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f))*/;
 
 	//auto modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
 	//mgl::Mesh* mesh2 = createMesh("cube-bevel.obj");
@@ -113,8 +113,11 @@ void MyApp::createShaderPrograms(std::string mesh) {
 
 	Shaders = new mgl::ShaderProgram();
 	std::string shader_dir = "assets/shaders/";
-	Shaders->addShader(GL_VERTEX_SHADER, shader_dir + "cube-vs.glsl");
-	Shaders->addShader(GL_FRAGMENT_SHADER, shader_dir + "cube-fs.glsl");
+	//Shaders->addShader(GL_VERTEX_SHADER, shader_dir + "cube-vs.glsl");
+	//Shaders->addShader(GL_FRAGMENT_SHADER, shader_dir + "cube-fs.glsl");
+
+	Shaders->addShader(GL_VERTEX_SHADER, shader_dir + "cel-shading.vert");
+	Shaders->addShader(GL_FRAGMENT_SHADER, shader_dir + "cel-shading.frag");
 
 	Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, mgl::Mesh::POSITION);
 	if (Mesh->hasNormals()) {
@@ -130,6 +133,8 @@ void MyApp::createShaderPrograms(std::string mesh) {
 	Shaders->addUniform(mgl::MODEL_MATRIX);
 	Shaders->addUniform(mgl::COLOR_ATTRIBUTE);
 	Shaders->addUniformBlock(mgl::CAMERA_BLOCK, UBO_BP);
+	Shaders->addUniform("lightDir");
+	Shaders->addUniform("lineColor");
 	Shaders->create();
 
 	ModelMatrixId = Shaders->Uniforms[mgl::MODEL_MATRIX].index;

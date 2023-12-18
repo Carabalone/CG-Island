@@ -143,6 +143,8 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="assets\shaders\cel-shading.frag" />
+    <None Include="assets\shaders\cel-shading.vert" />
     <None Include="assets\shaders\clip-fs.glsl" />
     <None Include="assets\shaders\clip-vs.glsl" />
     <None Include="assets\shaders\cube-fs.glsl" />
