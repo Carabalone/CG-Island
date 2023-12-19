@@ -13,6 +13,7 @@
 #include <GLFW/glfw3.h>
 
 #include "./mglApp.hpp"
+#include "./ShaderManager.h"
 #include "./mglCamera.hpp"
 #include "./mglConventions.hpp"
 #include "./mglError.hpp"

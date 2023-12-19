@@ -149,6 +149,8 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <None Include="assets\shaders\clip-vs.glsl" />
     <None Include="assets\shaders\cube-fs.glsl" />
     <None Include="assets\shaders\cube-vs.glsl" />
+    <None Include="assets\shaders\silhouette.frag" />
+    <None Include="assets\shaders\silhouette.vert" />
     <None Include="mgl\Makefile" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +159,7 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClCompile Include="mgl\mglError.cpp" />
     <ClCompile Include="mgl\mglMesh.cpp" />
     <ClCompile Include="mgl\mglShader.cpp" />
+    <ClCompile Include="mgl\ShaderManager.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="utils\Callback.cpp" />
     <ClCompile Include="utils\CameraManager.cpp" />
@@ -173,6 +176,7 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClInclude Include="mgl\mglMesh.hpp" />
     <ClInclude Include="mgl\mglScenegraph.hpp" />
     <ClInclude Include="mgl\mglShader.hpp" />
+    <ClInclude Include="mgl\ShaderManager.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="utils\Callback.h" />
     <ClInclude Include="utils\CameraManager.h" />

@@ -13,10 +13,11 @@ public:
     Callback* callback;                 // Optional callback
     SceneNode* parent;                   // Pointer to the parent node
     glm::mat4 worldMatrix;
+    std::string name;
 
 public:
     // Constructor
-    SceneNode(glm::mat4 model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb = nullptr);
+    SceneNode(std::string name, glm::mat4 model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb = nullptr);
     inline SceneNode() {
         modelMatrix = glm::mat4(1.0f);
         shader = nullptr;

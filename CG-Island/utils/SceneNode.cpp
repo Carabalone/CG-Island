@@ -1,8 +1,8 @@
 #include "sceneNode.h"
 #include <glm/glm.hpp>
 
-SceneNode::SceneNode(glm::mat4 model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb)
-	: modelMatrix(model), shader(shader), mesh(mesh), parent(nullptr), callback(cb), worldMatrix(model) {}
+SceneNode::SceneNode(std::string name, glm::mat4 model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb)
+	: modelMatrix(model), shader(shader), mesh(mesh), parent(nullptr), callback(cb), worldMatrix(model), name(name) {}
 
 SceneNode::~SceneNode() {
 	for (SceneNode* child : children) {

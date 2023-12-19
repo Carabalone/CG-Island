@@ -26,17 +26,16 @@ void main(void)
     vec3 specColor = vec3(0.9);
     vec3 normalizedexLightDir = normalize(lightPos - exPosition);
 
-
     float NdotL = dot(normal, normalizedexLightDir);
     float diff = max(NdotL, 0.0f);
     float flatShade = step(0.5, diff);
-    float intensity = smoothstep(0, 0.05, diff);
+    float intensity = smoothstep(0, 0.01, diff);
     vec3 light = lightColor * intensity;
 
     vec3 halfVec = normalize(normalizedexLightDir + eyeDir);
     float specAngle = max(dot(halfVec, normal), 0.0f);
     float specIntensity = pow(specAngle, glossiness * 16);
-    specIntensity = smoothstep(0, 0.01, specIntensity);
+    specIntensity = smoothstep(0, 0.005, specIntensity);
     vec3 specular = specIntensity * specColor;
 
     vec3 rimColor = vec3(1.0);
@@ -50,12 +49,12 @@ void main(void)
     vec3 finalColor = color * (ambientColor + light + specular);
 
     //FragmentColor = vec4(specular.r > 0.5 ? specular : vec3(0.2), 1.0);
-    FragmentColor = vec4(finalColor, 1.0);
     //FragmentColor = vec4(normalizedexLightDir, 1.0f);
     //FragmentColor = vec4(exEyeDir, 1.0f);
     //FragmentColor = vec4(halfVec, 1.0f);
     //FragmentColor = vec4(vec3(dot(normal, eyeDir)), 1.0f);
     //FragmentColor = vec4(normal, 1.0f);
     //FragmentColor = vec4(rawNormal, 1.0);
+    FragmentColor = vec4(finalColor, 1.0);
 
 }

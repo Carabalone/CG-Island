@@ -21,10 +21,13 @@ uniform Camera {
 
 void main(void)
 {
-	vec4 MCPosition = vec4(inPosition, 1.0);
+	vec3 testPos = inPosition;
+	//testPos.y = sin(testPos.x*6);
+	//testPos.z = cos(testPos.x*4);
+	vec4 MCPosition = vec4(testPos, 1.0);
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;
 
-	exPosition = (ViewMatrix * ModelMatrix * vec4(inPosition, 1.0)).xyz;
+	exPosition = (ViewMatrix * ModelMatrix * vec4(testPos, 1.0)).xyz;
 	exTexcoord = inTexcoord;
 	exNormal = mat3(transpose(inverse(ModelMatrix))) * inNormal;
 	exEyeDir = normalize(-exPosition);

@@ -22,6 +22,8 @@
     <None Include="assets\shaders\cube-vs.glsl" />
     <None Include="assets\shaders\cel-shading.frag" />
     <None Include="assets\shaders\cel-shading.vert" />
+    <None Include="assets\shaders\silhouette.frag" />
+    <None Include="assets\shaders\silhouette.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils\CameraManager.cpp">
@@ -55,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utils\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mgl\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -96,6 +101,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utils\Callback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mgl\ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
