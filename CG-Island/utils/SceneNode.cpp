@@ -71,3 +71,12 @@ void SceneNode::updateModelMatrices() {
 	}
 }
 
+SceneNode* SceneNode::getChild(std::string name) {
+	for (SceneNode* child : children) {
+		if (child->name == name) {
+			return child;
+		}
+	}
+	return nullptr;
+}
+

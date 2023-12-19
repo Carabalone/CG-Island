@@ -10,6 +10,9 @@ out vec3 exNormal;
 out vec3 exLightDir;
 out vec3 exEyeDir;
 out vec3 rawNormal;
+out vec3 exLightPos;
+out vec3 exPosWorld;
+out vec3 exCameraPos;
 
 uniform mat4 ModelMatrix;
 uniform vec3 lightDir;
@@ -22,16 +25,10 @@ uniform Camera {
 void main(void)
 {
 	vec3 testPos = inPosition;
-	//testPos.y = sin(testPos.x*6);
-	//testPos.z = cos(testPos.x*4);
 	vec4 MCPosition = vec4(testPos, 1.0);
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;
 
-	exPosition = (ViewMatrix * ModelMatrix * vec4(testPos, 1.0)).xyz;
-	exTexcoord = inTexcoord;
+	exPosWorld = (ModelMatrix * vec4(testPos, 1.0)).xyz;
 	exNormal = mat3(transpose(inverse(ModelMatrix))) * inNormal;
-	exEyeDir = normalize(-exPosition);
-	rawNormal = inNormal;
-	exLightDir = normalize(lightDir);
-
+	exCameraPos = vec3(inverse(ViewMatrix)[3]);
 }

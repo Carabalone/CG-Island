@@ -31,7 +31,8 @@ public:
 	void initCallback(GLFWwindow* win) override;
 	void displayCallback(GLFWwindow* win, double elapsed) override;
 	void windowSizeCallback(GLFWwindow* win, int width, int height) override;
-	mgl::ShaderProgram* createShaderProgram(std::string mesh, std::string vertexShader, std::string fragmentShader, std::vector<std::string> uniforms);
+	void addMeshAttributes(std::string mesh, std::vector<std::string>& attributes);
+	mgl::ShaderProgram* createShaderProgram(std::string vertexShader, std::string fragmentShader, std::vector<std::string> uniforms);
 	void cursorCallback(GLFWwindow* window, double xpos, double ypos) override;
 	void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) override;
 	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) override;
@@ -40,7 +41,6 @@ public:
 private:
 	const GLuint UBO_BP = 0;
 
-	mgl::ShaderProgram* Shaders = nullptr;
 	mgl::Camera* Camera = nullptr;
 	mgl::Camera* CameraPerspective = nullptr;
 	CameraManager* cameraManager = nullptr;
@@ -53,7 +53,6 @@ private:
 	//void createMesh(std::string name, std::string mesh_file);
 	mgl::Mesh* createMesh(std::string mesh_file);
 	void createMeshes();
-	void createShaderPrograms(std::string mesh);
 	void createAllShaderPrograms();
 	void createCamera();
 	void drawScene();
@@ -91,25 +90,29 @@ mgl::Mesh* MyApp::createMesh(std::string mesh_file) {
 void MyApp::createMeshes() {
 
 	mgl::Mesh* mesh = createMesh("testsphere.obj");
-	sceneGraph.insert({ "testsphere.obj", SceneNode("mainSphere", glm::mat4(1.0f), Shaders, mesh)});
-	sceneGraph.at("testsphere.obj").modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) /** glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f))*/;
-	sceneGraph.at("testsphere.obj").shader = createShaderProgram("testsphere.obj", "cel-shading.vert",
-		"cel-shading.frag",
-		std::vector<std::string>{"lightDir", "lineColor"});
+
+	auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
+	torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) /** glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f))*/;
+	torus.shader = shaderManager.getShader("cel-shading");
+
+	sceneGraph.insert({ "torus", torus});
 
 
-	mgl::ShaderProgram* silhouetteShader = createShaderProgram("testsphere.obj", "silhouette.vert", "silhouette.frag",
-		std::vector<std::string>{});
+	mgl::ShaderProgram* silhouetteShader = shaderManager.getShader("silhouette");
 
 	SilhouetteCallback* silhouetteCallback = new SilhouetteCallback();
-	sceneGraph.at("testsphere.obj").addChild(new SceneNode(
+	sceneGraph.at("torus").addChild(new SceneNode(
 		"silhouette", glm::mat4(1.0f) * glm::scale(glm::vec3(1.013f)), silhouetteShader, mesh,
 		silhouetteCallback
 	));
 
-	//auto modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 0.0f));
-	//mgl::Mesh* mesh2 = createMesh("cube-bevel.obj");
-	//sceneGraph.at("cube").addChild(new SceneNode(modelMatrix, Shaders, mesh2));
+	mgl::Mesh* grid = createMesh("grid.obj");
+
+	auto gridNode = SceneNode("grid", glm::mat4(1.0f), nullptr, grid);
+	gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(0.5f));
+	gridNode.shader = shaderManager.getShader("cel-shading");
+
+	sceneGraph.insert({ "grid", gridNode });
 }
 
 ///////////////////////////////////////////////////////////////////////// SHADER
@@ -127,37 +130,34 @@ void printCurrentDir() {
 	printf("The current working directory is %s\n", cCurrentPath);
 }
 
-mgl::ShaderProgram* MyApp::createShaderProgram(std::string mesh, std::string vertexShader, std::string fragmentShader,
+void MyApp::addMeshAttributes(std::string mesh_name, std::vector<std::string> &attributes) {
+	auto mesh = sceneGraph.at(mesh_name).mesh;
+
+	if (mesh->hasNormals()) 
+		attributes.push_back(mgl::NORMAL_ATTRIBUTE);
+	if (mesh->hasTexcoords()) 
+		attributes.push_back(mgl::TEXCOORD_ATTRIBUTE);
+	if (mesh->hasTangentsAndBitangents())
+		attributes.push_back(mgl::TANGENT_ATTRIBUTE);
+}
+
+mgl::ShaderProgram* MyApp::createShaderProgram(std::string vertexShader, std::string fragmentShader,
 								std::vector<std::string> uniforms) {
 
-	Shaders = new mgl::ShaderProgram();
+	auto Shaders = new mgl::ShaderProgram();
 	std::string shader_dir = "assets/shaders/";
-	//Shaders->addShader(GL_VERTEX_SHADER, shader_dir + "cube-vs.glsl");
-	//Shaders->addShader(GL_FRAGMENT_SHADER, shader_dir + "cube-fs.glsl");
-
-	//Shaders->addShader(GL_VERTEX_SHADER, shader_dir + "cel-shading.vert");
-	//Shaders->addShader(GL_FRAGMENT_SHADER, shader_dir + "cel-shading.frag");
 
 	Shaders->addShader(GL_VERTEX_SHADER, shader_dir + vertexShader);
 	Shaders->addShader(GL_FRAGMENT_SHADER, shader_dir + fragmentShader);
 
 	Shaders->addAttribute(mgl::POSITION_ATTRIBUTE, mgl::Mesh::POSITION);
 
-	mgl::Mesh* currentMesh = sceneGraph.at(mesh).mesh;
-	if (currentMesh->hasNormals()) {
-		Shaders->addAttribute(mgl::NORMAL_ATTRIBUTE, mgl::Mesh::NORMAL);
-	}
-	if (currentMesh->hasTexcoords()) {
-		Shaders->addAttribute(mgl::TEXCOORD_ATTRIBUTE, mgl::Mesh::TEXCOORD);
-	}
-	if (currentMesh->hasTangentsAndBitangents()) {
-		Shaders->addAttribute(mgl::TANGENT_ATTRIBUTE, mgl::Mesh::TANGENT);
-	}
+	Shaders->addAttribute(mgl::NORMAL_ATTRIBUTE, mgl::Mesh::NORMAL);
+	Shaders->addAttribute(mgl::TEXCOORD_ATTRIBUTE, mgl::Mesh::TEXCOORD);
+	Shaders->addAttribute(mgl::TANGENT_ATTRIBUTE, mgl::Mesh::TANGENT);
 
 	Shaders->addUniform(mgl::MODEL_MATRIX);
-	//Shaders->addUniform(mgl::COLOR_ATTRIBUTE);
-	//Shaders->addUniform("lightDir");
-	//Shaders->addUniform("lineColor");
+
 	for (auto uniform : uniforms) {
 		Shaders->addUniform(uniform);
 	}
@@ -197,6 +197,18 @@ void MyApp::keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	if (inputManager.isKeyPressed(GLFW_KEY_ESCAPE)) {
 		exit(0);
 	}
+
+	if (inputManager.isKeyPressed(GLFW_KEY_W)) {
+		sceneGraph.at("torus.obj").modelMatrix = glm::rotate(sceneGraph.at("torus.obj").modelMatrix, glm::radians(10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+
+	if (inputManager.isKeyHeld(GLFW_KEY_Y)) {
+
+		auto sil = sceneGraph.at("torus.obj").getChild("silhouette");
+		auto mm = sil->modelMatrix;
+
+		sil->modelMatrix = glm::rotate(mm, glm::radians(10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	}
 }
 
 void MyApp::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -206,9 +218,14 @@ void MyApp::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 }
 
 void MyApp::createAllShaderPrograms() {
-	for (auto const& node : sceneGraph) {
-		//createShaderPrograms(node.first);
-	}
+	shaderManager.addShader("cel-shading", createShaderProgram("cel-shading.vert",
+		"cel-shading.frag",
+		std::vector<std::string>{"lightDir", "lineColor"}
+	));
+	shaderManager.addShader("silhouette", createShaderProgram("silhouette.vert", "silhouette.frag",
+				std::vector<std::string>{}
+	));
+
 }
 ///////////////////////////////////////////////////////////////////////// CAMERA
 
@@ -266,8 +283,8 @@ void MyApp::drawScene() {
 ////////////////////////////////////////////////////////////////////// CALLBACKS
 
 void MyApp::initCallback(GLFWwindow* win) {
+	createAllShaderPrograms(); // create all shader programs before meshes
 	createMeshes();
-	createAllShaderPrograms();  // after mesh;
 	createCamera();
 }
 

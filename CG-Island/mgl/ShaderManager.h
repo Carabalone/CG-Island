@@ -12,10 +12,10 @@ namespace mgl {
         ShaderManager();
         ~ShaderManager();
 
-        void loadShader(const std::string& name, const std::string& vertexFile, const std::string& fragmentFile);
+        void addShader(std::string name, ShaderProgram* program);
 
         // Access ShaderProgram instances
-        ShaderProgram& getShader(const std::string& name);
+        ShaderProgram* getShader(const std::string& name);
 
         // Use a shader program
         void useShader(const std::string& name);
@@ -23,7 +23,7 @@ namespace mgl {
         void unbindCurrentShader();
 
     private:
-        std::map<std::string, ShaderProgram> shaders;
+        std::map<std::string, ShaderProgram*> shaders;
         std::string currentShader; // Track the currently active shader
     };
 

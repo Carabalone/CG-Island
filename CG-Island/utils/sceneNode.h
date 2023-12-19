@@ -36,5 +36,6 @@ public:
     void draw();
     mgl::ShaderProgram* getParentShader();
     void updateModelMatrices();
+    SceneNode* getChild(std::string name);
 };
 
