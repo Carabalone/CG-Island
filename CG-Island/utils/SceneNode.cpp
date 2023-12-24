@@ -2,7 +2,9 @@
 #include <glm/glm.hpp>
 
 SceneNode::SceneNode(std::string name, glm::mat4 model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb)
-	: modelMatrix(model), shader(shader), mesh(mesh), parent(nullptr), callback(cb), worldMatrix(model), name(name) {}
+	: modelMatrix(model), shader(shader), mesh(mesh), parent(nullptr), callback(cb), worldMatrix(model), name(name) {
+	textureNames = std::vector<std::string>();
+}
 
 SceneNode::~SceneNode() {
 	for (SceneNode* child : children) {
@@ -29,11 +31,23 @@ void SceneNode::draw() {
 
 	if (mesh && shader) {
 		shader->bind();
-		updateModelMatrices();
-		glUniformMatrix4fv(shader->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
-		glUniform3fv(shader->Uniforms["lightDir"].index, 1, glm::value_ptr(lightDirection));
-		glUniform3fv(shader->Uniforms["lineColor"].index, 1, glm::value_ptr(lineColor));
-		mesh->draw();
+
+			for (const auto& textureName : textureNames) {
+				std::cout << "texname: " << textureName << std::endl;
+				mgl::TextureInfo* textureInfo = mgl::TextureManager::getInstance().getTextureInfo(textureName);
+				if (textureInfo) {
+					textureInfo->updateShader(shader);
+				}
+			}
+
+			updateModelMatrices();
+
+			glUniformMatrix4fv(shader->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
+			glUniform3fv(shader->Uniforms["lightDir"].index, 1, glm::value_ptr(lightDirection));
+			glUniform3fv(shader->Uniforms["lineColor"].index, 1, glm::value_ptr(lineColor));
+
+			mesh->draw();
+
 		shader->unbind();
 	}
 
@@ -80,3 +94,7 @@ SceneNode* SceneNode::getChild(std::string name) {
 	return nullptr;
 }
 
+void SceneNode::addTexture(std::string texname) {
+	if (mgl::TextureManager::getInstance().exists(texname))
+		textureNames.push_back(texname);
+}

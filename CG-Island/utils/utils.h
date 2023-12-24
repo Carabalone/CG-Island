@@ -2,6 +2,13 @@
 #include <utility>
 #include <glm/common.hpp>
 #include <glm/matrix.hpp>
+#include "CameraManager.h"
+#include "Callback.h"
+#include "InputManager.h"
+#include "sceneNode.h"
+#include "RenderConfig.h"
+#include "TextureManager.h"
+#include "Material.h"
 
 #ifndef UTILS_H
 #define UTILS_H

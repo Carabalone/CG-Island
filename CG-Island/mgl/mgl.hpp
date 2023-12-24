@@ -20,5 +20,7 @@
 #include "./mglMesh.hpp"
 #include "./mglScenegraph.hpp"
 #include "./mglShader.hpp"
+#include "stb_image.h"
+#include "mglTexture.hpp"
 
 #endif /* MGL_HPP */

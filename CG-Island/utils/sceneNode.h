@@ -2,6 +2,9 @@
 #include "Callback.h"
 #include "../mgl/mgl.hpp"
 #include <glm/gtc/type_ptr.hpp>
+#include "../mgl/mgl.hpp"
+#include "TextureManager.h"
+#include "RenderConfig.h"
 
 class SceneNode {
 private:
@@ -14,6 +17,8 @@ public:
     SceneNode* parent;                   // Pointer to the parent node
     glm::mat4 worldMatrix;
     std::string name;
+    std::vector<std::string> textureNames;
+    RenderConfig renderConfig;
 
 public:
     // Constructor
@@ -37,5 +42,6 @@ public:
     mgl::ShaderProgram* getParentShader();
     void updateModelMatrices();
     SceneNode* getChild(std::string name);
+    void addTexture(std::string texname);
 };
 

@@ -158,13 +158,18 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClCompile Include="mgl\mglCamera.cpp" />
     <ClCompile Include="mgl\mglError.cpp" />
     <ClCompile Include="mgl\mglMesh.cpp" />
+    <ClCompile Include="mgl\mglSampler.cpp" />
     <ClCompile Include="mgl\mglShader.cpp" />
+    <ClCompile Include="mgl\mglTexture.cpp" />
     <ClCompile Include="mgl\ShaderManager.cpp" />
+    <ClCompile Include="sbti_instancer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="utils\Callback.cpp" />
     <ClCompile Include="utils\CameraManager.cpp" />
     <ClCompile Include="utils\InputManager.cpp" />
+    <ClCompile Include="utils\Material.cpp" />
     <ClCompile Include="utils\SceneNode.cpp" />
+    <ClCompile Include="utils\TextureManager.cpp" />
     <ClCompile Include="utils\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,14 +179,20 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClInclude Include="mgl\mglConventions.hpp" />
     <ClInclude Include="mgl\mglError.hpp" />
     <ClInclude Include="mgl\mglMesh.hpp" />
+    <ClInclude Include="mgl\mglSampler.hpp" />
     <ClInclude Include="mgl\mglScenegraph.hpp" />
     <ClInclude Include="mgl\mglShader.hpp" />
+    <ClInclude Include="mgl\mglTexture.hpp" />
     <ClInclude Include="mgl\ShaderManager.h" />
-    <ClInclude Include="utils.h" />
+    <ClInclude Include="mgl\stb_image.h" />
     <ClInclude Include="utils\Callback.h" />
     <ClInclude Include="utils\CameraManager.h" />
     <ClInclude Include="utils\InputManager.h" />
+    <ClInclude Include="utils\Material.h" />
+    <ClInclude Include="utils\RenderConfig.h" />
     <ClInclude Include="utils\sceneNode.h" />
+    <ClInclude Include="utils\TextureManager.h" />
+    <ClInclude Include="utils\utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

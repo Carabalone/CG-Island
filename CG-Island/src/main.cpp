@@ -16,14 +16,13 @@
 #include "../mgl/mgl.hpp"
 #include <iomanip> 
 #include <direct.h>
-#include "../utils/sceneNode.h"
 #define GetCurrentDir _getcwd
-#include "../utils/CameraManager.h"
-#include "../utils/InputManager.h"
 #include <unordered_map>
 
-////////////////////////////////////////////////////////////////////////// MYAPP
+#include "../utils/utils.h"
 
+void printCurrentDir();
+////////////////////////////////////////////////////////////////////////// MYAPP
 
 
 class MyApp : public mgl::App {
@@ -56,6 +55,7 @@ private:
 	void createAllShaderPrograms();
 	void createCamera();
 	void drawScene();
+	void setupTextures();
 };
 
 
@@ -92,10 +92,19 @@ void MyApp::createMeshes() {
 	mgl::Mesh* mesh = createMesh("testsphere.obj");
 
 	auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
-	torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) /** glm::rotate(glm::radians(50.0f), glm::vec3(0.0f, 0.0f, 1.0f))*/;
+	torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	torus.shader = shaderManager.getShader("cel-shading");
+	torus.addTexture("saul_goodman_tex");
+	
+	RenderConfig torusConfig = RenderConfig();
+
+	torusConfig.sendUniforms = []() {
+		
+	};
 
 	sceneGraph.insert({ "torus", torus});
+
+	sceneGraph.at("torus").addTexture("saul_goodman_tex");
 
 
 	mgl::ShaderProgram* silhouetteShader = shaderManager.getShader("silhouette");
@@ -113,6 +122,24 @@ void MyApp::createMeshes() {
 	gridNode.shader = shaderManager.getShader("cel-shading");
 
 	sceneGraph.insert({ "grid", gridNode });
+}
+
+void MyApp::setupTextures() {
+	printCurrentDir();
+
+	mgl::TextureManager& textureManager = mgl::TextureManager::getInstance();
+
+	// Load the texture using the TextureManager
+	mgl::Texture2D* saulGoodmanTexture = new mgl::Texture2D();
+	saulGoodmanTexture->load("assets/textures/saul_goodman.png");
+
+	// Create a sampler (you can customize this based on your needs)
+	mgl::LinearSampler* saulGoodmanSampler = new mgl::LinearSampler();
+	saulGoodmanSampler->create();
+
+	// Add the texture and sampler to the TextureManager
+	textureManager.addTexture("saul_goodman_tex", GL_TEXTURE0, 0, "tex1", saulGoodmanTexture, saulGoodmanSampler);
+
 }
 
 ///////////////////////////////////////////////////////////////////////// SHADER
@@ -220,7 +247,7 @@ void MyApp::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 void MyApp::createAllShaderPrograms() {
 	shaderManager.addShader("cel-shading", createShaderProgram("cel-shading.vert",
 		"cel-shading.frag",
-		std::vector<std::string>{"lightDir", "lineColor"}
+		std::vector<std::string>{"lightDir", "lineColor", "tex1"}
 	));
 	shaderManager.addShader("silhouette", createShaderProgram("silhouette.vert", "silhouette.frag",
 				std::vector<std::string>{}
@@ -280,10 +307,12 @@ void MyApp::drawScene() {
 
 }
 
+
 ////////////////////////////////////////////////////////////////////// CALLBACKS
 
 void MyApp::initCallback(GLFWwindow* win) {
 	createAllShaderPrograms(); // create all shader programs before meshes
+	setupTextures();
 	createMeshes();
 	createCamera();
 }
