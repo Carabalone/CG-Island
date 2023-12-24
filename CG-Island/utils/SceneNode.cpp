@@ -4,6 +4,7 @@
 SceneNode::SceneNode(std::string name, glm::mat4 model, mgl::ShaderProgram* shader, mgl::Mesh* mesh, Callback* cb)
 	: modelMatrix(model), shader(shader), mesh(mesh), parent(nullptr), callback(cb), worldMatrix(model), name(name) {
 	textureNames = std::vector<std::string>();
+	renderConfig = RenderConfig();
 }
 
 SceneNode::~SceneNode() {
@@ -33,7 +34,6 @@ void SceneNode::draw() {
 		shader->bind();
 
 			for (const auto& textureName : textureNames) {
-				std::cout << "texname: " << textureName << std::endl;
 				mgl::TextureInfo* textureInfo = mgl::TextureManager::getInstance().getTextureInfo(textureName);
 				if (textureInfo) {
 					textureInfo->updateShader(shader);
@@ -42,11 +42,20 @@ void SceneNode::draw() {
 
 			updateModelMatrices();
 
+			renderConfig.sendUniforms(shader);
+			renderConfig.setupTextures();
 			glUniformMatrix4fv(shader->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
 			glUniform3fv(shader->Uniforms["lightDir"].index, 1, glm::value_ptr(lightDirection));
 			glUniform3fv(shader->Uniforms["lineColor"].index, 1, glm::value_ptr(lineColor));
 
 			mesh->draw();
+
+			for (const auto& textureName : textureNames) {
+				mgl::TextureInfo* textureInfo = mgl::TextureManager::getInstance().getTextureInfo(textureName);
+				if (textureInfo) {
+					textureInfo->unbind();
+				}
+			}
 
 		shader->unbind();
 	}

@@ -31,6 +31,12 @@ namespace mgl {
 		std::cout << "uniform from updateShader:" << uniform << std::endl;
 	}
 
+	void TextureInfo::unbind() {
+		texture->unbind();
+		if (sampler)
+			sampler->unbind(index);
+	}
+
 	//////////////////////////////////////////////////////////////////////// Texture
 
 	Texture::Texture() : id(-1) {}

@@ -11,10 +11,11 @@ out vec4 FragmentColor;
 uniform vec3 lightDir;
 uniform vec3 lineColor;
 uniform sampler2D tex1;
+uniform bool useTexture;
 
 const vec3 lightPos = vec3(3.0f);
 const vec3 ambientColor = vec3(0.4f, 0.4f, 0.4f);
-const vec3 color = vec3(0.7, 0.1, 0.1);
+vec3 color = vec3(0.7, 0.1, 0.1);
 const vec3 lightColor = vec3(1.0);
 const float glossiness = 32.0;
 const vec3 specColor = vec3(1.0);
@@ -38,9 +39,10 @@ void main(void)
     specIntensity = smoothstep(0, 0.0015, specIntensity);
     vec3 specular = specIntensity * specColor * 2.0;
 
+    if (useTexture) {
+	    color = texture(tex1, exTexCoord).rgb;
+    }
 	vec3 finalColor = color * (ambientColor + light + specular);
-    vec3 textureColor = texture(tex1, exTexCoord).rgb;
-    finalColor = textureColor;
 //
 //    FragmentColor = vec4(specular.r > 0.5 ? specular : vec3(0.2), 1.0);
 //	FragmentColor = vec4(normalizedexLightDir, 1.0f);

@@ -29,6 +29,7 @@ public:
         mesh = nullptr;
         callback = nullptr;
         parent = nullptr;
+        renderConfig = RenderConfig();
     }
 
     // Destructor

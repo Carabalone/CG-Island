@@ -5,15 +5,13 @@
 #ifndef RENDER_CONFIG_H
 
 struct RenderConfig {
-    std::function<void()> sendUniforms = defaultSendUniforms;
+    std::function<void(mgl::ShaderProgram*)> sendUniforms = defaultSendUniforms;
     std::function<void()> setupTextures = defaultSetupTextures;
 
-    static void defaultSendUniforms() {
-        std::cout << "Default sendUniforms\n";
+    static void defaultSendUniforms(mgl::ShaderProgram* program) {
     }
 
     static void defaultSetupTextures() {
-        std::cout << "Default setupTextures\n";
     }
 };
 

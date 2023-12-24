@@ -47,6 +47,7 @@ namespace mgl {
 			Texture* texture, Sampler* sampler);
 		TextureInfo() : unit(GL_TEXTURE0), index(0), texture(nullptr), sampler(nullptr) {}
 		void updateShader(ShaderProgram* shader);
+		void unbind();
 	};
 
 	/////////////////////////////////////////////////////////////////////// TEXTURES

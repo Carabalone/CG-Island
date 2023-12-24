@@ -91,37 +91,50 @@ void MyApp::createMeshes() {
 
 	mgl::Mesh* mesh = createMesh("testsphere.obj");
 
-	auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
-	torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	torus.shader = shaderManager.getShader("cel-shading");
-	torus.addTexture("saul_goodman_tex");
-	
-	RenderConfig torusConfig = RenderConfig();
-
-	torusConfig.sendUniforms = []() {
+	{
+		auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
+		torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+		torus.shader = shaderManager.getShader("cel-shading");
+		//torus.addTexture("saul_goodman_tex");
 		
-	};
+		RenderConfig torusConfig = RenderConfig();
 
-	sceneGraph.insert({ "torus", torus});
+		torusConfig.sendUniforms = [](mgl::ShaderProgram* shader) {
+			glUniform1i(shader->Uniforms["useTexture"].index, false);
+		};
 
-	sceneGraph.at("torus").addTexture("saul_goodman_tex");
+		torus.renderConfig = torusConfig;
+		sceneGraph.insert({ "torus", torus});
+	}
 
+	{
+		mgl::ShaderProgram* silhouetteShader = shaderManager.getShader("silhouette");
 
-	mgl::ShaderProgram* silhouetteShader = shaderManager.getShader("silhouette");
+		SilhouetteCallback* silhouetteCallback = new SilhouetteCallback();
+		sceneGraph.at("torus").addChild(new SceneNode(
+			"silhouette", glm::mat4(1.0f) * glm::scale(glm::vec3(1.013f)), silhouetteShader, mesh,
+			silhouetteCallback
+		));
+	}
 
-	SilhouetteCallback* silhouetteCallback = new SilhouetteCallback();
-	sceneGraph.at("torus").addChild(new SceneNode(
-		"silhouette", glm::mat4(1.0f) * glm::scale(glm::vec3(1.013f)), silhouetteShader, mesh,
-		silhouetteCallback
-	));
+	{
+		mgl::Mesh* grid = createMesh("grid.obj");
 
-	mgl::Mesh* grid = createMesh("grid.obj");
+		auto gridNode = SceneNode("grid", glm::mat4(1.0f), nullptr, grid);
+		gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(0.5f));
+		gridNode.shader = shaderManager.getShader("cel-shading");
+		gridNode.addTexture("saul_goodman_tex");
 
-	auto gridNode = SceneNode("grid", glm::mat4(1.0f), nullptr, grid);
-	gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(0.5f));
-	gridNode.shader = shaderManager.getShader("cel-shading");
+		RenderConfig rc = RenderConfig();
 
-	sceneGraph.insert({ "grid", gridNode });
+		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+			glUniform1i(shader->Uniforms["useTexture"].index, true);
+		};
+
+		gridNode.renderConfig = rc;
+
+		sceneGraph.insert({ "grid", gridNode });
+	}
 }
 
 void MyApp::setupTextures() {
@@ -247,7 +260,7 @@ void MyApp::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 void MyApp::createAllShaderPrograms() {
 	shaderManager.addShader("cel-shading", createShaderProgram("cel-shading.vert",
 		"cel-shading.frag",
-		std::vector<std::string>{"lightDir", "lineColor", "tex1"}
+		std::vector<std::string>{"lightDir", "lineColor", "tex1", "useTexture"}
 	));
 	shaderManager.addShader("silhouette", createShaderProgram("silhouette.vert", "silhouette.frag",
 				std::vector<std::string>{}
