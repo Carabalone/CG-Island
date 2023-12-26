@@ -10,3 +10,11 @@ void SilhouetteCallback::afterDraw() {
     glCullFace(GL_BACK);
 }
 
+
+void DepthTestCallback::beforeDraw() {
+    glDisable(GL_DEPTH_TEST);
+}
+
+void DepthTestCallback::afterDraw() {
+	glEnable(GL_DEPTH_TEST);
+}

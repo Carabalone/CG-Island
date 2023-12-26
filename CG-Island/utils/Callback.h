@@ -14,3 +14,7 @@ class SilhouetteCallback : public Callback {
     void afterDraw();
 };
 
+class DepthTestCallback : public Callback {
+    void beforeDraw();
+    void afterDraw();
+};
