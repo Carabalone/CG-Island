@@ -21,9 +21,7 @@ namespace mgl {
 	const std::string ShaderProgram::read(const std::string& filename) {
 		std::string line, shader_string;
 		std::ifstream ifile(filename);
-		std::cout << "filename in read >> " << filename << std::endl;
 		while (std::getline(ifile, line)) {
-			std::cout << "line> " << line << std::endl;
 			shader_string += line + "\n";
 		}
 		return shader_string;
@@ -68,22 +66,9 @@ namespace mgl {
 
 	void ShaderProgram::addShader(const GLenum shader_type,
 		const std::string& filename) {
-		std::cout << "filename> " << filename << std::endl;
 
-		char cCurrentPath[FILENAME_MAX];
-
-		if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
-		{
-			printf("Error getting current directory\n");
-		}
-
-		cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
-
-		printf("The current working directory is %s\n", cCurrentPath);
 		const GLuint shader_id = glCreateShader(shader_type);
 		const std::string scode = read(filename);
-		std::printf("Shader %d: %s\n", shader_id, filename.c_str());
-		std::printf("Shader code: %s\n", scode.c_str());
 		const GLchar* code = scode.c_str();
 		glShaderSource(shader_id, 1, &code, 0);
 		glCompileShader(shader_id);

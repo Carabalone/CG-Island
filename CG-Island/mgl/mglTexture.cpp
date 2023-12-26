@@ -28,7 +28,6 @@ namespace mgl {
 		if (sampler)
 			sampler->bind(index);
 		glUniform1i(shader->Uniforms[uniform].index, index);
-		std::cout << "uniform from updateShader:" << uniform << std::endl;
 	}
 
 	void TextureInfo::unbind() {
