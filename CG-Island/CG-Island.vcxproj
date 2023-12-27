@@ -163,6 +163,7 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClCompile Include="mgl\mglSampler.cpp" />
     <ClCompile Include="mgl\mglShader.cpp" />
     <ClCompile Include="mgl\mglTexture.cpp" />
+    <ClCompile Include="mgl\PerlinNoise.cpp" />
     <ClCompile Include="mgl\ShaderManager.cpp" />
     <ClCompile Include="sbti_instancer.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -185,8 +186,10 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClInclude Include="mgl\mglScenegraph.hpp" />
     <ClInclude Include="mgl\mglShader.hpp" />
     <ClInclude Include="mgl\mglTexture.hpp" />
+    <ClInclude Include="mgl\PerlinNoise.h" />
     <ClInclude Include="mgl\ShaderManager.h" />
     <ClInclude Include="mgl\stb_image.h" />
+    <ClInclude Include="mgl\stb_image_write.h" />
     <ClInclude Include="utils\Callback.h" />
     <ClInclude Include="utils\CameraManager.h" />
     <ClInclude Include="utils\InputManager.h" />

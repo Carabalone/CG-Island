@@ -18,4 +18,17 @@ namespace mgl {
 
 		return interpolated_matrix;
 	}
+
+	void printCurrentDir() {
+		char cCurrentPath[FILENAME_MAX];
+
+		if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
+		{
+			printf("Error getting current directory\n");
+		}
+
+		cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
+
+		printf("The current working directory is %s\n", cCurrentPath);
+	}
 }

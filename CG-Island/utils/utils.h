@@ -9,6 +9,8 @@
 #include "RenderConfig.h"
 #include "TextureManager.h"
 #include "Material.h"
+#include <direct.h>
+#define GetCurrentDir _getcwd
 
 #ifndef UTILS_H
 #define UTILS_H
@@ -16,6 +18,7 @@
 namespace mgl {
 	float clamp(float min, float max, float value);
 	glm::mat4 interpolate_mat4(glm::mat4 initial_matrix, glm::mat4 target, float progress);
+	void printCurrentDir();
 }
 
 #endif // !UTILS_H

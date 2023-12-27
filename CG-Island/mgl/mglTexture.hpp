@@ -14,6 +14,7 @@
 
 #include "mglSampler.hpp"
 #include "mglShader.hpp"
+#include "PerlinNoise.h"
 
 namespace mgl {
 
@@ -57,6 +58,10 @@ namespace mgl {
 		void bind() override;
 		void unbind() override;
 		void load(const std::string& filename);
+		void loadFromPixelArray(float* image, int width, int height);
+		void generatePerlinNoise(int width, int height, unsigned int seed);
+		void saveImageAsPPM(const std::string& filename, const float* pixels, int width, int height);
+		void write_ppm(std::ostream& output, const float* pixels, int width, int height);
 	};
 
 	////////////////////////////////////////////////////////////////////////////////

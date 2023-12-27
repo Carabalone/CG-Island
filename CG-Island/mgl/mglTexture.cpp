@@ -7,6 +7,8 @@
 #include <cstring>
 #include <fstream>
 #include <cassert>
+#include <iomanip>
+#include "../utils/utils.h"
 
 namespace mgl {
 
@@ -110,6 +112,96 @@ namespace mgl {
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		stbi_image_free(image);
+	}
+
+	void Texture2D::loadFromPixelArray(float* image, int width, int height) {
+
+		glGenTextures(1, &id);
+		glBindTexture(GL_TEXTURE_2D, id);
+
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		//                GL_LINEAR_MIPMAP_LINEAR);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+			GL_FLOAT, image);
+		// syntax: glTexImage2D(target, level, internalformat, width, height, border,
+		// format, type, data)
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+	}
+
+	void Texture2D::generatePerlinNoise(int width, int height, unsigned int seed) {
+		printCurrentDir();
+
+		PerlinNoise perlinNoise(seed);
+
+		float* pixels = new float[width * height * 4];
+
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; ++x) {
+
+				float nx = static_cast<float>(x) / static_cast<float>(width);
+				float ny = static_cast<float>(y) / static_cast<float>(height);
+
+				// Get Perlin noise value
+				float value = perlinNoise.noise(5.0f * nx, 5.0f * ny);
+
+				int index = (y * width + x) * 4;
+				pixels[index] = value;
+				pixels[index + 1] = value;
+				pixels[index + 2] = value;
+				pixels[index + 3] = 1.0f; // Alpha channel
+			}
+		}
+
+		loadFromPixelArray(pixels, width, height);
+
+		delete[] pixels;
+	}
+
+	void Texture2D::saveImageAsPPM(const std::string& filename, const float* pixels, int width, int height) {
+		std::ofstream outputFile(filename, std::ios::binary);
+
+		if (outputFile.is_open()) {
+			// Save the image in PPM format
+			write_ppm(outputFile, pixels, width, height);
+
+			outputFile.close();
+		}
+	}
+
+	void Texture2D::write_ppm(std::ostream& output, const float* pixels, int width, int height) {
+		// Write the PPM header
+		output << "P6\n";
+		output << width << " " << height << "\n";
+		output << "255\n";
+
+		// Convert float pixel values to unsigned char (0-255 range)
+		unsigned char* pixelData = new unsigned char[width * height * 3];
+		for (int i = 0; i < width * height * 3; ++i) {
+			pixelData[i] = static_cast<unsigned char>(pixels[i] * 255.0f);
+		}
+
+		// Write the pixel data
+		output.write(reinterpret_cast<const char*>(pixelData), width * height * 3);
+
+		delete[] pixelData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

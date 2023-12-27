@@ -93,21 +93,22 @@ void MyApp::createMeshes() {
 
 	mgl::Mesh* mesh = createMesh("testsphere.obj");
 
-	//{
-	//	auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
-	//	torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	//	torus.shader = shaderManager.getShader("cel-shading");
-	//	//torus.addTexture("saul_goodman_tex");
-	//	
-	//	RenderConfig torusConfig = RenderConfig();
+	{
+		auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
+		torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+		torus.shader = shaderManager.getShader("cel-shading");
+		//torus.addTexture("saul_goodman_tex");
+		torus.addTexture("noise");
+		
+		RenderConfig torusConfig = RenderConfig();
 
-	//	torusConfig.sendUniforms = [](mgl::ShaderProgram* shader) {
-	//		glUniform1i(shader->Uniforms["useTexture"].index, false);
-	//	};
+		torusConfig.sendUniforms = [](mgl::ShaderProgram* shader) {
+			glUniform1i(shader->Uniforms["useTexture"].index, true);
+		};
 
-	//	torus.renderConfig = torusConfig;
-	//	sceneGraph.insert({ "torus", torus});
-	//}
+		torus.renderConfig = torusConfig;
+		sceneGraph.insert({ "torus", torus});
+	}
 
 	//{
 	//	mgl::ShaderProgram* silhouetteShader = shaderManager.getShader("silhouette");
@@ -119,50 +120,50 @@ void MyApp::createMeshes() {
 	//	));
 	//}
 
-	{
-		mgl::Mesh* grid = createMesh("grid.obj");
+	//{
+	//	mgl::Mesh* grid = createMesh("grid.obj");
 
-		auto gridNode = SceneNode("grid", glm::mat4(1.0f), nullptr, grid);
-		gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(4.0f, 1.0f, 4.0f));
-		gridNode.shader = shaderManager.getShader("water-toon");
-		//gridNode.addTexture("saul_goodman_tex");
+	//	auto gridNode = SceneNode("grid", glm::mat4(1.0f), nullptr, grid);
+	//	gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(4.0f, 1.0f, 4.0f));
+	//	gridNode.shader = shaderManager.getShader("water-toon");
+	//	//gridNode.addTexture("saul_goodman_tex");
 
-		RenderConfig rc = RenderConfig();
+	//	RenderConfig rc = RenderConfig();
 
-		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
-			glUniform1i(shader->Uniforms["useTexture"].index, false);
-			glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
-		};
+	//	rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+	//		glUniform1i(shader->Uniforms["useTexture"].index, false);
+	//		glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
+	//	};
 
-		gridNode.renderConfig = rc;
-		gridNode.transparent = true;
-		gridNode.callback = new DepthTestCallback();
+	//	gridNode.renderConfig = rc;
+	//	gridNode.transparent = true;
+	//	gridNode.callback = new DepthTestCallback();
 
-		sceneGraph.insert({ "grid", gridNode });
-	}
+	//	sceneGraph.insert({ "grid", gridNode });
+	//}
 
-	{
-		mgl::Mesh* terrain = createMesh("island-smooth-big.obj");
+	//{
+	//	mgl::Mesh* terrain = createMesh("island-smooth-big.obj");
 
-		auto terrainNode = SceneNode("terrain", glm::mat4(1.0f), nullptr, terrain);
-		terrainNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(1.0f, 0.5f, 1.0f));
-		terrainNode.shader = shaderManager.getShader("cel-shading");
-		terrainNode.addTexture("sand_tex");
+	//	auto terrainNode = SceneNode("terrain", glm::mat4(1.0f), nullptr, terrain);
+	//	terrainNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(1.0f, 0.5f, 1.0f));
+	//	terrainNode.shader = shaderManager.getShader("cel-shading");
+	//	terrainNode.addTexture("sand_tex");
+	//	//terrainNode.addTexture("noise");
 
-		RenderConfig rc = RenderConfig();
-		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
-			glUniform1i(shader->Uniforms["useTexture"].index, true);
-			//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
-		};
+	//	RenderConfig rc = RenderConfig();
+	//	rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+	//		glUniform1i(shader->Uniforms["useTexture"].index, true);
+	//		//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
+	//	};
 
-		terrainNode.renderConfig = rc;
+	//	terrainNode.renderConfig = rc;
 
-		sceneGraph.insert({ "terrain", terrainNode });
-	}
+	//	sceneGraph.insert({ "terrain", terrainNode });
+	//}
 }
 
 void MyApp::setupTextures() {
-	printCurrentDir();
 
 	mgl::TextureManager& textureManager = mgl::TextureManager::getInstance();
 
@@ -190,22 +191,18 @@ void MyApp::setupTextures() {
 	// Add the texture and sampler to the TextureManager
 	textureManager.addTexture("sand_tex", GL_TEXTURE1, 1, "tex1", sandTexture, sandSampler);
 
+	mgl::Texture2D* noise = new mgl::Texture2D();
+
+	noise->generatePerlinNoise(512, 512, 50);
+
+	mgl::LinearSampler* noiseSampler = new mgl::LinearSampler();
+	noiseSampler->create();
+
+	textureManager.addTexture("noise", GL_TEXTURE2, 2, "tex1", noise, noiseSampler);
+
 }
 
 ///////////////////////////////////////////////////////////////////////// SHADER
-
-void printCurrentDir() {
-	char cCurrentPath[FILENAME_MAX];
-
-	if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
-	{
-		printf("Error getting current directory\n");
-	}
-
-	cCurrentPath[sizeof(cCurrentPath) - 1] = '\0'; /* not really required */
-
-	printf("The current working directory is %s\n", cCurrentPath);
-}
 
 void MyApp::addMeshAttributes(std::string mesh_name, std::vector<std::string> &attributes) {
 	auto mesh = sceneGraph.at(mesh_name).mesh;
