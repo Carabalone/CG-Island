@@ -18,12 +18,14 @@
     <None Include="mgl\Makefile" />
     <None Include="assets\shaders\clip-fs.glsl" />
     <None Include="assets\shaders\clip-vs.glsl" />
-    <None Include="assets\shaders\cube-fs.glsl" />
-    <None Include="assets\shaders\cube-vs.glsl" />
+    <None Include="assets\shaders\simple-fs.glsl" />
+    <None Include="assets\shaders\simple-vs.glsl" />
     <None Include="assets\shaders\cel-shading.frag" />
     <None Include="assets\shaders\cel-shading.vert" />
     <None Include="assets\shaders\silhouette.frag" />
     <None Include="assets\shaders\silhouette.vert" />
+    <None Include="assets\shaders\water-toon.frag" />
+    <None Include="assets\shaders\water-toon.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils\CameraManager.cpp">

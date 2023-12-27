@@ -18,6 +18,7 @@ public:
     glm::mat4 worldMatrix;
     std::string name;
     std::vector<std::string> textureNames;
+    bool transparent = false;
     RenderConfig renderConfig;
 
 public:

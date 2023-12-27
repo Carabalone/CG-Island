@@ -67,6 +67,8 @@ namespace mgl {
 	void ShaderProgram::addShader(const GLenum shader_type,
 		const std::string& filename) {
 
+		std::cout << "creating shader: " << filename << std::endl;
+
 		const GLuint shader_id = glCreateShader(shader_type);
 		const std::string scode = read(filename);
 		const GLchar* code = scode.c_str();

@@ -48,11 +48,13 @@ private:
 	InputManager inputManager = InputManager();
 	std::unordered_map<std::string, SceneNode> sceneGraph;
 	mgl::ShaderManager shaderManager = mgl::ShaderManager();
+	float fov = 30.0f;
 
 	//void createMesh(std::string name, std::string mesh_file);
 	mgl::Mesh* createMesh(std::string mesh_file);
 	void createMeshes();
 	void createAllShaderPrograms();
+	void setNewProjectionMatrix(float fov);
 	void createCamera();
 	void drawScene();
 	void setupTextures();
@@ -91,49 +93,71 @@ void MyApp::createMeshes() {
 
 	mgl::Mesh* mesh = createMesh("testsphere.obj");
 
-	{
-		auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
-		torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		torus.shader = shaderManager.getShader("cel-shading");
-		//torus.addTexture("saul_goodman_tex");
-		
-		RenderConfig torusConfig = RenderConfig();
+	//{
+	//	auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
+	//	torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	//	torus.shader = shaderManager.getShader("cel-shading");
+	//	//torus.addTexture("saul_goodman_tex");
+	//	
+	//	RenderConfig torusConfig = RenderConfig();
 
-		torusConfig.sendUniforms = [](mgl::ShaderProgram* shader) {
-			glUniform1i(shader->Uniforms["useTexture"].index, false);
-		};
+	//	torusConfig.sendUniforms = [](mgl::ShaderProgram* shader) {
+	//		glUniform1i(shader->Uniforms["useTexture"].index, false);
+	//	};
 
-		torus.renderConfig = torusConfig;
-		sceneGraph.insert({ "torus", torus});
-	}
+	//	torus.renderConfig = torusConfig;
+	//	sceneGraph.insert({ "torus", torus});
+	//}
 
-	{
-		mgl::ShaderProgram* silhouetteShader = shaderManager.getShader("silhouette");
+	//{
+	//	mgl::ShaderProgram* silhouetteShader = shaderManager.getShader("silhouette");
 
-		SilhouetteCallback* silhouetteCallback = new SilhouetteCallback();
-		sceneGraph.at("torus").addChild(new SceneNode(
-			"silhouette", glm::mat4(1.0f) * glm::scale(glm::vec3(1.013f)), silhouetteShader, mesh,
-			silhouetteCallback
-		));
-	}
+	//	SilhouetteCallback* silhouetteCallback = new SilhouetteCallback();
+	//	sceneGraph.at("torus").addChild(new SceneNode(
+	//		"silhouette", glm::mat4(1.0f) * glm::scale(glm::vec3(1.013f)), silhouetteShader, mesh,
+	//		silhouetteCallback
+	//	));
+	//}
 
 	{
 		mgl::Mesh* grid = createMesh("grid.obj");
 
 		auto gridNode = SceneNode("grid", glm::mat4(1.0f), nullptr, grid);
-		gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(0.5f));
-		gridNode.shader = shaderManager.getShader("cel-shading");
-		gridNode.addTexture("saul_goodman_tex");
+		gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(4.0f, 1.0f, 4.0f));
+		gridNode.shader = shaderManager.getShader("water-toon");
+		//gridNode.addTexture("saul_goodman_tex");
 
 		RenderConfig rc = RenderConfig();
 
 		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
-			glUniform1i(shader->Uniforms["useTexture"].index, true);
+			glUniform1i(shader->Uniforms["useTexture"].index, false);
+			glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
 		};
 
 		gridNode.renderConfig = rc;
+		gridNode.transparent = true;
+		gridNode.callback = new DepthTestCallback();
 
 		sceneGraph.insert({ "grid", gridNode });
+	}
+
+	{
+		mgl::Mesh* terrain = createMesh("island-smooth-big.obj");
+
+		auto terrainNode = SceneNode("terrain", glm::mat4(1.0f), nullptr, terrain);
+		terrainNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(1.0f, 0.5f, 1.0f));
+		terrainNode.shader = shaderManager.getShader("cel-shading");
+		terrainNode.addTexture("sand_tex");
+
+		RenderConfig rc = RenderConfig();
+		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+			glUniform1i(shader->Uniforms["useTexture"].index, true);
+			//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
+		};
+
+		terrainNode.renderConfig = rc;
+
+		sceneGraph.insert({ "terrain", terrainNode });
 	}
 }
 
@@ -152,6 +176,19 @@ void MyApp::setupTextures() {
 
 	// Add the texture and sampler to the TextureManager
 	textureManager.addTexture("saul_goodman_tex", GL_TEXTURE0, 0, "tex1", saulGoodmanTexture, saulGoodmanSampler);
+
+
+
+	// Load the texture using the TextureManager
+	mgl::Texture2D* sandTexture = new mgl::Texture2D();
+	sandTexture->load("assets/textures/sand.png");
+
+	// Create a sampler (you can customize this based on your needs)
+	mgl::LinearSampler* sandSampler = new mgl::LinearSampler();
+	sandSampler->create();
+
+	// Add the texture and sampler to the TextureManager
+	textureManager.addTexture("sand_tex", GL_TEXTURE1, 1, "tex1", sandTexture, sandSampler);
 
 }
 
@@ -239,32 +276,40 @@ void MyApp::keyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	}
 
 	if (inputManager.isKeyPressed(GLFW_KEY_W)) {
-		sceneGraph.at("torus.obj").modelMatrix = glm::rotate(sceneGraph.at("torus.obj").modelMatrix, glm::radians(10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 
 	if (inputManager.isKeyHeld(GLFW_KEY_Y)) {
-
-		auto sil = sceneGraph.at("torus.obj").getChild("silhouette");
-		auto mm = sil->modelMatrix;
-
-		sil->modelMatrix = glm::rotate(mm, glm::radians(10.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	}
 }
 
 void MyApp::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 	// Update the camera radius based on the y offset of the scroll
-	float scrollDelta = static_cast<float>(yoffset);
-	cameraManager->updateCameraZoom(scrollDelta);
+	//float scrollDelta = static_cast<float>(yoffset);
+	//cameraManager->updateCameraZoom(scrollDelta);
+
+	fov -= static_cast<float>(yoffset);
+	if (fov < 1.0f)
+		fov = 1.0f;
+	if (fov > 45.0f)
+		fov = 45.0f;
+
+	setNewProjectionMatrix(fov);
+	
 }
 
 void MyApp::createAllShaderPrograms() {
 	shaderManager.addShader("cel-shading", createShaderProgram("cel-shading.vert",
 		"cel-shading.frag",
-		std::vector<std::string>{"lightDir", "lineColor", "tex1", "useTexture"}
+		std::vector<std::string>{"lightDir", "lineColor", "tex1", "useTexture", "colorUniform"}
 	));
+
 	shaderManager.addShader("silhouette", createShaderProgram("silhouette.vert", "silhouette.frag",
 				std::vector<std::string>{}
 	));
+
+	shaderManager.addShader("water-toon", createShaderProgram("water-toon.vert", "water-toon.frag", 
+				std::vector<std::string>{ }
+		));	
 
 }
 ///////////////////////////////////////////////////////////////////////// CAMERA
@@ -288,18 +333,27 @@ glm::lookAt(glm::vec3(-5.0f, -5.0f, -5.0f), center,
 const glm::mat4 orthogonalProjection =
 glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, 1.0f, 10.0f);
 
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const glm::mat4 perspectiveProjection =
-glm::perspective(glm::radians(30.0f), 640.0f / 480.0f, 1.0f, 15.0f);
+void MyApp::setNewProjectionMatrix(float fov) {
+	const glm::mat4 perspectiveProjection =
+		glm::perspective(glm::radians(fov), 640.0f / 480.0f, 0.5f, 55.0f);
+
+	CameraPerspective->setProjectionMatrix(perspectiveProjection);
+}
+
 
 void MyApp::createCamera() {
+
+	// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+	const glm::mat4 perspectiveProjection =
+		glm::perspective(glm::radians(fov), 640.0f / 480.0f, 0.5f, 55.0f);
+
 	cameraManager = new CameraManager(UBO_BP);
 
 	Camera = new mgl::Camera(UBO_BP, center, up, 5.0f);
 	Camera->setViewMatrix(Camera->calculateViewMatrix());
 	Camera->setProjectionMatrix(orthogonalProjection);
 
-	CameraPerspective = new mgl::Camera(UBO_BP, center, up, 5.0f);
+	CameraPerspective = new mgl::Camera(UBO_BP, center, up, 30.0f);
 	CameraPerspective->setViewMatrix(Camera->calculateViewMatrix());
 	CameraPerspective->setProjectionMatrix(perspectiveProjection);
 
@@ -315,6 +369,16 @@ void MyApp::drawScene() {
 	cameraManager->sendMatrices();
 
 	for (auto& node : sceneGraph) {
+		if (node.second.transparent) {
+			continue;
+		}
+		node.second.draw();
+	}
+
+	for (auto& node : sceneGraph) {
+		if (!node.second.transparent) {
+			continue;
+		}
 		node.second.draw();
 	}
 

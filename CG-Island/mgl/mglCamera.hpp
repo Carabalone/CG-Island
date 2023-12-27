@@ -33,6 +33,8 @@ namespace mgl {
 		glm::vec3 center;
 		glm::vec3 up;
 		glm::vec3 pos;
+		float fov;
+
 		glm::mat4 calculateViewMatrix();
 		void updateOrientation(float deltaX, float deltaY);
 		glm::mat4 calculateRotationMatrix();

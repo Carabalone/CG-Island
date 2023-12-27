@@ -12,10 +12,10 @@ uniform vec3 lightDir;
 uniform vec3 lineColor;
 uniform sampler2D tex1;
 uniform bool useTexture;
+uniform vec3 colorUniform;
 
 const vec3 lightPos = vec3(3.0f);
 const vec3 ambientColor = vec3(0.4f, 0.4f, 0.4f);
-vec3 color = vec3(0.7, 0.1, 0.1);
 const vec3 lightColor = vec3(1.0);
 const float glossiness = 32.0;
 const vec3 specColor = vec3(1.0);
@@ -24,6 +24,7 @@ void main(void)
 {
     vec3 normal = normalize(exNormal);
     vec3 eyeDir = normalize(exCameraPos-exPosWorld);
+    vec3 color = colorUniform;
 
     vec3 normalizedexLightDir = normalize(lightPos - exPosWorld);
 

@@ -12,9 +12,12 @@ void SilhouetteCallback::afterDraw() {
 
 
 void DepthTestCallback::beforeDraw() {
-    glDisable(GL_DEPTH_TEST);
+    glDepthMask(false);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void DepthTestCallback::afterDraw() {
-	glEnable(GL_DEPTH_TEST);
+    glDepthMask(true);
+    glDisable(GL_BLEND);
 }
