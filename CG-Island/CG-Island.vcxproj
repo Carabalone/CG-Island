@@ -171,6 +171,7 @@ xcopy /y $(SolutionDir)dependencies\assimp\bin\x64\assimp-vc143-mt.dll $(OutDir)
     <ClCompile Include="utils\CameraManager.cpp" />
     <ClCompile Include="utils\InputManager.cpp" />
     <ClCompile Include="utils\Material.cpp" />
+    <ClCompile Include="utils\RenderConfigInstancer.cpp" />
     <ClCompile Include="utils\SceneNode.cpp" />
     <ClCompile Include="utils\TextureManager.cpp" />
     <ClCompile Include="utils\utils.cpp" />

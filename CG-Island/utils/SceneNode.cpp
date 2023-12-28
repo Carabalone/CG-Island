@@ -44,6 +44,8 @@ void SceneNode::draw() {
 
 			renderConfig.sendUniforms(shader);
 			renderConfig.setupTextures();
+			renderConfig.sendTime(shader);
+
 			glUniformMatrix4fv(shader->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
 			glUniform3fv(shader->Uniforms["lightDir"].index, 1, glm::value_ptr(lightDirection));
 			glUniform3fv(shader->Uniforms["lineColor"].index, 1, glm::value_ptr(lineColor));

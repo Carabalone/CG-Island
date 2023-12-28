@@ -29,6 +29,7 @@ const char TANGENT_ATTRIBUTE[] = "inTangent";
 const char BITANGENT_ATTRIBUTE[] = "inBitangent";
 const char COLOR_ATTRIBUTE[] = "inColor";
 
+const char TIME[] = "time";
 ////////////////////////////////////////////////////////////////////////////////
 }  // namespace mgl
 

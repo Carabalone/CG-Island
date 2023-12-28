@@ -49,6 +49,7 @@ private:
 	std::unordered_map<std::string, SceneNode> sceneGraph;
 	mgl::ShaderManager shaderManager = mgl::ShaderManager();
 	float fov = 30.0f;
+	float time = 0.0f;
 
 	//void createMesh(std::string name, std::string mesh_file);
 	mgl::Mesh* createMesh(std::string mesh_file);
@@ -93,22 +94,23 @@ void MyApp::createMeshes() {
 
 	mgl::Mesh* mesh = createMesh("testsphere.obj");
 
-	{
-		auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
-		torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		torus.shader = shaderManager.getShader("cel-shading");
-		//torus.addTexture("saul_goodman_tex");
-		torus.addTexture("noise");
-		
-		RenderConfig torusConfig = RenderConfig();
+	//{
+	//	auto torus = SceneNode("mainSphere", glm::mat4(1.0f), nullptr, mesh);
+	//	torus.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	//	//torus.shader = shaderManager.getShader("cel-shading");
+	//	torus.shader = shaderManager.getShader("simple");
+	//	torus.addTexture("saul_goodman_tex");
+	//	//torus.addTexture("noise");
+	//	
+	//	RenderConfig torusConfig = RenderConfig();
 
-		torusConfig.sendUniforms = [](mgl::ShaderProgram* shader) {
-			glUniform1i(shader->Uniforms["useTexture"].index, true);
-		};
+	//	torusConfig.sendUniforms = [](mgl::ShaderProgram* shader) {
+	//		glUniform1i(shader->Uniforms["useTexture"].index, false);
+	//	};
 
-		torus.renderConfig = torusConfig;
-		sceneGraph.insert({ "torus", torus});
-	}
+	//	torus.renderConfig = torusConfig;
+	//	sceneGraph.insert({ "torus", torus});
+	//}
 
 	//{
 	//	mgl::ShaderProgram* silhouetteShader = shaderManager.getShader("silhouette");
@@ -120,47 +122,51 @@ void MyApp::createMeshes() {
 	//	));
 	//}
 
-	//{
-	//	mgl::Mesh* grid = createMesh("grid.obj");
+	{
+		mgl::Mesh* grid = createMesh("grid.obj");
 
-	//	auto gridNode = SceneNode("grid", glm::mat4(1.0f), nullptr, grid);
-	//	gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(4.0f, 1.0f, 4.0f));
-	//	gridNode.shader = shaderManager.getShader("water-toon");
-	//	//gridNode.addTexture("saul_goodman_tex");
+		auto gridNode = SceneNode("grid", glm::mat4(1.0f), nullptr, grid);
+		gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(4.0f, 1.0f, 4.0f));
+		gridNode.shader = shaderManager.getShader("water-toon");
+		//gridNode.addTexture("saul_goodman_tex");
+		gridNode.addTexture("noise");
+		gridNode.addTexture("normalMap");
 
-	//	RenderConfig rc = RenderConfig();
+		RenderConfig rc = RenderConfig();
 
-	//	rc.sendUniforms = [](mgl::ShaderProgram* shader) {
-	//		glUniform1i(shader->Uniforms["useTexture"].index, false);
-	//		glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
-	//	};
+		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+			//glUniform1i(shader->Uniforms["useTexture"].index, false);
+			//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
+			glUniform1f(shader->Uniforms["resolution"].index, 800.0f/600.0f);
+		};
 
-	//	gridNode.renderConfig = rc;
-	//	gridNode.transparent = true;
-	//	gridNode.callback = new DepthTestCallback();
+		gridNode.renderConfig = rc;
+		gridNode.transparent = true;
+		gridNode.callback = new DepthTestCallback();
 
-	//	sceneGraph.insert({ "grid", gridNode });
-	//}
+		sceneGraph.insert({ "grid", gridNode });
+	}
 
-	//{
-	//	mgl::Mesh* terrain = createMesh("island-smooth-big.obj");
+	{
+		mgl::Mesh* terrain = createMesh("island-smooth-big.obj");
 
-	//	auto terrainNode = SceneNode("terrain", glm::mat4(1.0f), nullptr, terrain);
-	//	terrainNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(1.0f, 0.5f, 1.0f));
-	//	terrainNode.shader = shaderManager.getShader("cel-shading");
-	//	terrainNode.addTexture("sand_tex");
-	//	//terrainNode.addTexture("noise");
+		auto terrainNode = SceneNode("terrain", glm::mat4(1.0f), nullptr, terrain);
+		terrainNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(1.0f, 0.5f, 1.0f));
+		terrainNode.shader = shaderManager.getShader("cel-shading");
+		//terrainNode.shader = shaderManager.getShader("simple");
+		terrainNode.addTexture("sand_tex");
+		//terrainNode.addTexture("noise");
 
-	//	RenderConfig rc = RenderConfig();
-	//	rc.sendUniforms = [](mgl::ShaderProgram* shader) {
-	//		glUniform1i(shader->Uniforms["useTexture"].index, true);
-	//		//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
-	//	};
+		RenderConfig rc = RenderConfig();
+		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+			glUniform1i(shader->Uniforms["useTexture"].index, true);
+			//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
+		};
 
-	//	terrainNode.renderConfig = rc;
+		terrainNode.renderConfig = rc;
 
-	//	sceneGraph.insert({ "terrain", terrainNode });
-	//}
+		sceneGraph.insert({ "terrain", terrainNode });
+	}
 }
 
 void MyApp::setupTextures() {
@@ -199,6 +205,15 @@ void MyApp::setupTextures() {
 	noiseSampler->create();
 
 	textureManager.addTexture("noise", GL_TEXTURE2, 2, "tex1", noise, noiseSampler);
+
+	mgl::Texture2D* normalMap = new mgl::Texture2D();
+
+	normalMap->generateNormalMap(noise->pixels, 512, 512, 0.1f);
+
+	mgl::LinearSampler* normalMapSampler = new mgl::LinearSampler();
+	normalMapSampler->create();
+
+	textureManager.addTexture("normalMap", GL_TEXTURE3, 3, "normalMap", normalMap, normalMapSampler);
 
 }
 
@@ -305,6 +320,10 @@ void MyApp::createAllShaderPrograms() {
 	));
 
 	shaderManager.addShader("water-toon", createShaderProgram("water-toon.vert", "water-toon.frag", 
+				std::vector<std::string>{ "tex1", mgl::TIME, "normalMap", "resolution" }
+		));	
+
+	shaderManager.addShader("simple", createShaderProgram("simple-vs.glsl", "simple-fs.glsl", 
 				std::vector<std::string>{ }
 		));	
 
@@ -396,7 +415,12 @@ void MyApp::windowSizeCallback(GLFWwindow* win, int winx, int winy) {
 	// change projection matrices to maintain aspect ratio
 }
 
-void MyApp::displayCallback(GLFWwindow* win, double elapsed) { drawScene(); }
+void MyApp::displayCallback(GLFWwindow* win, double elapsed) {
+	time += elapsed;
+	RenderConfig::time = time;
+
+	drawScene();
+}
 
 /////////////////////////////////////////////////////////////////////////// MAIN
 

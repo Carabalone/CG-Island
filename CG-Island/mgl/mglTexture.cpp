@@ -159,7 +159,6 @@ namespace mgl {
 				float nx = static_cast<float>(x) / static_cast<float>(width);
 				float ny = static_cast<float>(y) / static_cast<float>(height);
 
-				// Get Perlin noise value
 				float value = perlinNoise.noise(5.0f * nx, 5.0f * ny);
 
 				int index = (y * width + x) * 4;
@@ -172,7 +171,36 @@ namespace mgl {
 
 		loadFromPixelArray(pixels, width, height);
 
-		delete[] pixels;
+		this->pixels = pixels;
+		storePixels = true;
+	}
+
+	void Texture2D::generateNormalMap(float *pixels, int width, int height, float scale) {
+		
+		float* normals = new float[width * height * 4];
+
+		for (int y = 0; y < height; ++y) {
+			for (int x = 0; x < width; x++) {
+				
+				float heightL = pixels[y * width + (x - 1 + width) % width];
+				float heightR = pixels[y * width + (x + 1) % width];
+				float heightD = pixels[((y - 1 + height) % height) * width + x];
+				float heightU = pixels[((y + 1) % height) * width + x];
+				
+				glm::vec3 normal = glm::normalize(glm::vec3(heightL - heightR, 2.0f, heightD - heightU));
+
+				// Set the normals in the normals array
+				int index = (y * width + x) * 4;
+				normals[index] = normal.x;
+				normals[index + 1] = normal.y;
+				normals[index + 2] = normal.z;
+				normals[index + 3] = 1.0f; // Alpha channel
+						
+			}
+		}
+
+		loadFromPixelArray(normals, width, height);
+
 	}
 
 	void Texture2D::saveImageAsPPM(const std::string& filename, const float* pixels, int width, int height) {
