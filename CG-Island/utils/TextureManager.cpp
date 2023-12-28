@@ -27,4 +27,9 @@ namespace mgl {
         return textureMap.find(texname) != textureMap.end();
     }
 
+    Texture* TextureManager::getTexture(const std::string& name) {
+		auto it = textureMap.find(name);
+		return (it != textureMap.end()) ? it->second.texture : nullptr;
+	}
+
 } // namespace mgl

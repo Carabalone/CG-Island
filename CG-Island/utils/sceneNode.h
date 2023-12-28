@@ -40,7 +40,8 @@ public:
     void addChild(SceneNode* child);
 
     // Draw method
-    void draw();
+    //void draw();
+    void draw(mgl::ShaderProgram* optionalShader = nullptr);
     mgl::ShaderProgram* getParentShader();
     void updateModelMatrices();
     SceneNode* getChild(std::string name);

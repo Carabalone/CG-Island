@@ -22,6 +22,5 @@ void main(void)
 	exNormal = inNormal;
 
 	vec4 MCPosition = vec4(inPosition, 1.0);
-	// MCPosition.y = -MCPosition.y;
-	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;
+	gl_Position = ViewMatrix * ModelMatrix * MCPosition;
 }

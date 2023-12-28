@@ -25,6 +25,8 @@ namespace mgl {
         TextureManager& operator=(const TextureManager&) = delete;
         TextureManager& operator=(TextureManager&&) = delete;
 
+        Texture* getTexture(const std::string& name);
+
         // Add texture with a given name
         void addTexture(const std::string& name, GLenum textureUnit, GLuint index, const std::string& uniform,
             Texture* texture, Sampler* sampler);

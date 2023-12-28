@@ -18,7 +18,7 @@ void SceneNode::addChild(SceneNode* child) {
 	child->parent = this;
 }
 
-void SceneNode::draw() {
+void SceneNode::draw(mgl::ShaderProgram* optionalShader) {
 	if (callback) {
 		callback->beforeDraw();
 	}
@@ -27,28 +27,31 @@ void SceneNode::draw() {
 	glm::mat4 worldMatrix(1.0f);
 
 	shader = shader ? shader : getParentShader();
+
+	mgl::ShaderProgram* shaderToUse = optionalShader ? optionalShader : shader;
+
 	glm::vec3 lightDirection = glm::vec3(1.0f);
 	glm::vec3 lineColor = glm::vec3(0.0f);
 
-	if (mesh && shader) {
-		shader->bind();
+	if (mesh && shaderToUse) {
+		shaderToUse->bind();
 
 			for (const auto& textureName : textureNames) {
 				mgl::TextureInfo* textureInfo = mgl::TextureManager::getInstance().getTextureInfo(textureName);
 				if (textureInfo) {
-					textureInfo->updateShader(shader);
+					textureInfo->updateShader(shaderToUse);
 				}
 			}
 
 			updateModelMatrices();
 
-			renderConfig.sendUniforms(shader);
+			renderConfig.sendUniforms(shaderToUse);
 			renderConfig.setupTextures();
-			renderConfig.sendTime(shader);
+			renderConfig.sendTime(shaderToUse);
 
-			glUniformMatrix4fv(shader->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
-			glUniform3fv(shader->Uniforms["lightDir"].index, 1, glm::value_ptr(lightDirection));
-			glUniform3fv(shader->Uniforms["lineColor"].index, 1, glm::value_ptr(lineColor));
+			glUniformMatrix4fv(shaderToUse->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
+			//glUniform3fv(shaderToUse->Uniforms["lightDir"].index, 1, glm::value_ptr(lightDirection));
+			//glUniform3fv(shaderToUse->Uniforms["lineColor"].index, 1, glm::value_ptr(lineColor));
 
 			mesh->draw();
 
@@ -59,7 +62,7 @@ void SceneNode::draw() {
 				}
 			}
 
-		shader->unbind();
+		shaderToUse->unbind();
 	}
 
 	for (SceneNode* child : children) {

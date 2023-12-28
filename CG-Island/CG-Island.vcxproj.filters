@@ -26,6 +26,10 @@
     <None Include="assets\shaders\silhouette.vert" />
     <None Include="assets\shaders\water-toon.frag" />
     <None Include="assets\shaders\water-toon.vert" />
+    <None Include="assets\shaders\depth.frag" />
+    <None Include="assets\shaders\depth.vert" />
+    <None Include="assets\shaders\screen.frag" />
+    <None Include="assets\shaders\screen.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils\CameraManager.cpp">

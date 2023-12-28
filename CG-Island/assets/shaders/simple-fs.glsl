@@ -6,6 +6,8 @@ in vec3 exNormal;
 
 out vec4 FragmentColor;
 
+uniform sampler2D depthMap;
+
 const float near = 0.1;
 const float far = 100.0;
 
@@ -17,5 +19,8 @@ float linearizeDepth(float depth)
 void main(void)
 {
     vec3 normalizedNormal = normalize(exNormal);
-    FragmentColor = vec4(vec3(linearizeDepth(gl_FragCoord.z) / far - gl_FragCoord.w), 1.0);
+    //FragmentColor = vec4(texture(depthMap, exTexcoord).xyz, 1.0);
+    FragmentColor = vec4(vec3(texture(depthMap, exTexcoord).x), 1.0);
+
+    //FragmentColor = vec4(vec3(0.0f, 0.0f, 1.0f), 1.0f);
 }
