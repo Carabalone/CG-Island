@@ -68,6 +68,72 @@ namespace mgl {
 	};
 
 	////////////////////////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////////////////// QUAD
+
+	class Quad2D {
+	private:
+		GLuint _vaoId, _vboId;
+		GLfloat _vertices[16];
+		void destroy();
+
+	public:
+		static const GLuint POSITION = 0;
+		static const GLuint TEXCOORD = 1;
+
+		Quad2D();
+		~Quad2D();
+		void create();
+		void draw();
+	};
+
+	////////////////////////////////////////////////////////////////// RENDER TARGET
+
+	class RenderTargetTexture : Texture {
+	private:
+		Quad2D _quad;
+		GLuint _framebuffer, _rboDepthStencil;
+		GLfloat _r, _g, _b, _a;
+		void destroy();
+		void createColorTexture(const int width, const int height);
+		void createRenderbufferObject(const int width, const int height);
+
+	public:
+		RenderTargetTexture();
+		~RenderTargetTexture();
+		void bind() override;
+		void unbind() override;
+		void create(const int width, const int height);
+		void setFramebufferClearColor(const GLfloat r, const GLfloat g,
+			const GLfloat b, const GLfloat a);
+		void bindFramebuffer();
+		void unbindFramebuffer();
+		void renderQuad(ShaderProgram* program, std::string textureUniform);
+	};
+
+	class DepthTexture : Texture {
+	private:
+		GLuint _framebuffer;
+		Quad2D _quad;
+		//void destroy();
+		void createDepthTexture(const int width, const int height);
+	public :
+		DepthTexture();
+	//	~DepthTexture();
+		void bind() override;
+		void unbind() override;
+		void create(const int width, const int height);
+		void bindFramebuffer();
+		void unbindFramebuffer();
+		void renderQuad(ShaderProgram* program, std::string textureUniform);
+	};
+
+	enum class TEXTURE_ACTIVE_UNITS {
+
+	};
+
+
+	////////////////////////////////////////////////////////////////////////////////
 } // namespace mgl
 
 #endif /* MGL_TEXTURE_HPP */

@@ -7,6 +7,7 @@ in vec3 inNormal;
 out vec3 exPosition;
 out vec2 exTexcoord;
 out vec3 exNormal;
+out vec4 screenSpacePos;
 
 uniform mat4 ModelMatrix;
 uniform sampler2D tex1;
@@ -52,12 +53,13 @@ void main(void)
 
 	vec3 position = inPosition;
 	float k = height2(position.xz, time );
-	position.y = k;
+	//position.y = k;
 
 	exPosition = (ModelMatrix * vec4(position, 1.0f)).xyz;
 
 	exNormal = normalize(vec3(position.y - height2(position.xz + vec2(0.1, 0.0), time ), 0.1, k - height2(position.xz + vec2(0.0, 0.1), time )));
 
 	vec4 MCPosition = vec4(position, 1.0);
+	vec4 screenSpacePos = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;
 }

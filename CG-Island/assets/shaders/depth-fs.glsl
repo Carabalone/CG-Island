@@ -1,10 +1,8 @@
 #version 330 core
 
+in vec3 exPosition;
 in vec2 exTexcoord;
-
-out vec4 FragmentColor;
-
-uniform sampler2D depthMap;
+in vec3 exNormal;
 
 const float near = 0.5;
 const float far = 55.0;
@@ -16,5 +14,6 @@ float linearizeDepth(float depth)
 
 void main(void)
 {
-    FragmentColor = vec4(vec3(texture(depthMap, exTexcoord).r), 1.0);
+    // dont need to do anything because we dont have a color buffer
+    gl_FragDepth = linearizeDepth(gl_FragCoord.z) / far;
 }

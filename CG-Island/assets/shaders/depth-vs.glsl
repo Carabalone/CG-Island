@@ -22,5 +22,5 @@ void main(void)
 	exNormal = inNormal;
 
 	vec4 MCPosition = vec4(inPosition, 1.0);
-	gl_Position = ViewMatrix * ModelMatrix * MCPosition;
+	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition; // camera space
 }

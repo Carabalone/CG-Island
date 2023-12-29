@@ -13,11 +13,11 @@ uniform vec3 lineColor;
 uniform sampler2D tex1;
 uniform bool useTexture;
 uniform vec3 colorUniform;
+uniform float glossiness;
 
 const vec3 lightPos = vec3(3.0f);
 const vec3 ambientColor = vec3(0.4f, 0.4f, 0.4f);
 const vec3 lightColor = vec3(1.0);
-const float glossiness = 32.0;
 const vec3 specColor = vec3(1.0);
 
 void main(void)
