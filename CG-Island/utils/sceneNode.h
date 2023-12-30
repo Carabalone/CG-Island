@@ -19,6 +19,7 @@ public:
     std::string name;
     std::vector<std::string> textureNames;
     bool transparent = false;
+    bool useCallback = true;
     RenderConfig renderConfig;
 
 public:

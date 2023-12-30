@@ -108,7 +108,7 @@ void MyApp::createMeshes() {
 		};
 
 		torus.renderConfig = torusConfig;
-		sceneGraph.insert({ "torus", torus});
+		sceneGraph.insert({ "torus", torus });
 	}
 
 	{
@@ -128,15 +128,17 @@ void MyApp::createMeshes() {
 		gridNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) * glm::scale(glm::vec3(4.0f, 1.0f, 4.0f));
 		gridNode.shader = shaderManager.getShader("water-toon");
 		//gridNode.addTexture("saul_goodman_tex");
-		gridNode.addTexture("noise");
-		gridNode.addTexture("depth");
+		gridNode.addTexture("waveFoamNoise");
+		gridNode.addTexture("depthMap");
+		gridNode.addTexture("surfaceDepth");
+		gridNode.addTexture("dudvMap");
 
 		RenderConfig rc = RenderConfig();
 
 		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
 			//glUniform1i(shader->Uniforms["useTexture"].index, false);
 			//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
-			glUniform1f(shader->Uniforms["resolution"].index, 800.0f/600.0f);
+			glUniform1f(shader->Uniforms["resolution"].index, 800.0f / 600.0f);
 		};
 
 		gridNode.renderConfig = rc;
@@ -150,10 +152,11 @@ void MyApp::createMeshes() {
 	{
 
 		auto terrainNode = SceneNode("terrain", glm::mat4(1.0f), nullptr, terrain);
-		terrainNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)) * glm::scale(glm::vec3(1.0f, 0.5f, 1.0f));
+		terrainNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -3.0f, 0.0f)) * glm::scale(glm::vec3(1.0f, 0.7f, 1.0f));
 		terrainNode.shader = shaderManager.getShader("cel-shading");
 		//terrainNode.shader = shaderManager.getShader("simple");
 		terrainNode.addTexture("sand_tex");
+		//terrainNode.addTexture("waveFoamNoise");
 		//terrainNode.addTexture("noise");
 
 		RenderConfig rc = RenderConfig();
@@ -183,7 +186,7 @@ void MyApp::createMeshes() {
 
 		sceneGraph.at("terrain").addChild(terrainSilhouette);
 	}
-	
+
 }
 
 void MyApp::setupTextures() {
@@ -214,23 +217,18 @@ void MyApp::setupTextures() {
 	// Add the texture and sampler to the TextureManager
 	textureManager.addTexture("sand_tex", GL_TEXTURE1, 1, "tex1", sandTexture, sandSampler);
 
-	mgl::Texture2D* noise = new mgl::Texture2D();
 
-	noise->generatePerlinNoise(512, 512, 50);
 
-	mgl::LinearSampler* noiseSampler = new mgl::LinearSampler();
-	noiseSampler->create();
+	mgl::Texture2D* waveFoamNoise = new mgl::Texture2D();
 
-	textureManager.addTexture("noise", GL_TEXTURE2, 2, "tex1", noise, noiseSampler);
+	//waveFoamNoise->generatePerlinNoise(512, 512, 50);
+	waveFoamNoise->load("assets/textures/perlin_noise.png");
 
-	mgl::Texture2D* normalMap = new mgl::Texture2D();
+	mgl::LinearSampler* waveFoamNoiseSampler = new mgl::LinearSampler();
+	waveFoamNoiseSampler->create();
 
-	normalMap->generateNormalMap(noise->pixels, 512, 512, 0.1f);
+	textureManager.addTexture("waveFoamNoise", GL_TEXTURE2, 2, "waveFoamNoise", waveFoamNoise, waveFoamNoiseSampler);
 
-	mgl::LinearSampler* normalMapSampler = new mgl::LinearSampler();
-	normalMapSampler->create();
-
-	textureManager.addTexture("normalMap", GL_TEXTURE3, 3, "normalMap", normalMap, normalMapSampler);
 
 
 	mgl::DepthTexture* depthTexture = new mgl::DepthTexture();
@@ -243,23 +241,46 @@ void MyApp::setupTextures() {
 		std::cout << "[DEBUG] reinterpret_cast from DepthTexture to Texture failed" << std::endl;
 		exit(1);
 	}
+
+	mgl::DepthTexture* surfaceDepth = new mgl::DepthTexture();
+
+	surfaceDepth->create(800, 600);
+
+	textureManager.addTexture("surfaceDepth", GL_TEXTURE5, 5, "surfaceDepth", reinterpret_cast<mgl::Texture*>(surfaceDepth), nullptr);
+
+	if (!reinterpret_cast<mgl::Texture*>(surfaceDepth)) {
+		std::cout << "[DEBUG] reinterpret_cast from DepthTexture to Texture failed" << std::endl;
+		exit(1);
+	}
+
+
+	mgl::Texture2D* dudvMap = new mgl::Texture2D();
+
+	dudvMap->load("assets/textures/waterDUDV.png");
+
+	mgl::LinearSampler* dudvMapSampler = new mgl::LinearSampler();
+
+	dudvMapSampler->create();
+
+	textureManager.addTexture("dudvMap", GL_TEXTURE6, 6, "dudvMap", dudvMap, dudvMapSampler);
+
 }
 
 ///////////////////////////////////////////////////////////////////////// SHADER
 
-void MyApp::addMeshAttributes(std::string mesh_name, std::vector<std::string> &attributes) {
+void MyApp::addMeshAttributes(std::string mesh_name, std::vector<std::string>& attributes) {
 	auto mesh = sceneGraph.at(mesh_name).mesh;
 
-	if (mesh->hasNormals()) 
+	if (mesh->hasNormals())
 		attributes.push_back(mgl::NORMAL_ATTRIBUTE);
-	if (mesh->hasTexcoords()) 
+	if (mesh->hasTexcoords())
 		attributes.push_back(mgl::TEXCOORD_ATTRIBUTE);
 	if (mesh->hasTangentsAndBitangents())
 		attributes.push_back(mgl::TANGENT_ATTRIBUTE);
 }
 
 mgl::ShaderProgram* MyApp::createShaderProgram(std::string vertexShader, std::string fragmentShader,
-								std::vector<std::string> uniforms) {
+	std::vector<std::string> uniforms) {
 
 	auto Shaders = new mgl::ShaderProgram();
 	std::string shader_dir = "assets/shaders/";
@@ -334,7 +355,7 @@ void MyApp::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 		fov = 45.0f;
 
 	setNewProjectionMatrix(fov);
-	
+
 }
 
 void MyApp::createAllShaderPrograms() {
@@ -344,23 +365,23 @@ void MyApp::createAllShaderPrograms() {
 	));
 
 	shaderManager.addShader("silhouette", createShaderProgram("silhouette.vert", "silhouette.frag",
-				std::vector<std::string>{}
+		std::vector<std::string>{}
 	));
 
-	shaderManager.addShader("water-toon", createShaderProgram("water-toon.vert", "water-toon.frag", 
-				std::vector<std::string>{ "tex1", mgl::TIME, "depthMap", "resolution" }
-	));	
-
-	shaderManager.addShader("simple", createShaderProgram("simple-vs.glsl", "simple-fs.glsl", 
-				std::vector<std::string>{ }
-	));	
-
-	shaderManager.addShader("depth", createShaderProgram("depth-vs.glsl", "depth-fs.glsl", 
-				std::vector<std::string>{ }
+	shaderManager.addShader("water-toon", createShaderProgram("water-toon.vert", "water-toon.frag",
+		std::vector<std::string>{ "tex1", mgl::TIME, "depthMap", "waveFoamNoise", "surfaceDepth", "dudvMap" }
 	));
 
-	shaderManager.addShader("screen", createShaderProgram("screen-vs.glsl", "screen-fs.glsl", 
-				std::vector<std::string>{ "depthMap" }
+	shaderManager.addShader("simple", createShaderProgram("simple-vs.glsl", "simple-fs.glsl",
+		std::vector<std::string>{ }
+	));
+
+	shaderManager.addShader("depth", createShaderProgram("depth-vs.glsl", "depth-fs.glsl",
+		std::vector<std::string>{ }
+	));
+
+	shaderManager.addShader("screen", createShaderProgram("screen-vs.glsl", "screen-fs.glsl",
+		std::vector<std::string>{ "depthMap" }
 	));
 }
 ///////////////////////////////////////////////////////////////////////// CAMERA
@@ -422,7 +443,8 @@ void MyApp::drawScene() {
 	mgl::TextureManager& textureManager = mgl::TextureManager::getInstance();
 
 	mgl::DepthTexture* depthTexture = reinterpret_cast<mgl::DepthTexture*>(textureManager.getTexture("depthMap"));
-	if (!depthTexture) {
+	mgl::DepthTexture* surfaceDepth = reinterpret_cast<mgl::DepthTexture*>(textureManager.getTexture("surfaceDepth"));
+	if (!(depthTexture && surfaceDepth)) {
 		std::cout << "[DEBUG] reinterpret_cast from Texture to DepthTexture in DrawScene() failed" << std::endl;
 		exit(1);
 	}
@@ -432,14 +454,27 @@ void MyApp::drawScene() {
 
 	depthTexture->bindFramebuffer();
 
-		for (auto& node : sceneGraph) {
-			if (node.second.name == "grid") {
-				continue;
-			}
-			node.second.draw(depthShader);
+	for (auto& node : sceneGraph) {
+		if (node.second.name == "grid") {
+			continue;
 		}
+		node.second.draw(depthShader);
+	}
 
 	depthTexture->unbindFramebuffer();
+
+	surfaceDepth->bindFramebuffer();
+
+	for (auto& node : sceneGraph) {
+		if (node.second.name == "grid") {
+			node.second.useCallback = false;
+			node.second.draw(depthShader);
+			node.second.useCallback = true;
+		}
+		node.second.draw(depthShader);
+	}
+
+	surfaceDepth->unbindFramebuffer();
 
 	for (auto& node : sceneGraph) {
 		if (node.second.transparent) {
@@ -455,10 +490,6 @@ void MyApp::drawScene() {
 		node.second.draw();
 	}
 
-	depthTexture->renderQuad(depthShader, "depthMap");
-
-
-	//render objects
 
 }
 

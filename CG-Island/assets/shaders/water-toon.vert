@@ -55,11 +55,11 @@ void main(void)
 	float k = height2(position.xz, time );
 	//position.y = k;
 
-	exPosition = (ModelMatrix * vec4(position, 1.0f)).xyz;
+	exPosition = (ViewMatrix * ModelMatrix * vec4(position, 1.0f)).xyz;
 
 	exNormal = normalize(vec3(position.y - height2(position.xz + vec2(0.1, 0.0), time ), 0.1, k - height2(position.xz + vec2(0.0, 0.1), time )));
 
 	vec4 MCPosition = vec4(position, 1.0);
-	vec4 screenSpacePos = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;
+	vec4 screenSpacePos = ViewMatrix * ModelMatrix * MCPosition;
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;
 }

@@ -19,7 +19,7 @@ void SceneNode::addChild(SceneNode* child) {
 }
 
 void SceneNode::draw(mgl::ShaderProgram* optionalShader) {
-	if (callback) {
+	if (callback && useCallback) {
 		callback->beforeDraw();
 	}
 	//GLuint ColorId = 1;
@@ -69,7 +69,7 @@ void SceneNode::draw(mgl::ShaderProgram* optionalShader) {
 		child->draw();
 	}
 
-	if (callback) {
+	if (callback && useCallback) {
 		callback->afterDraw();
 	}
 }

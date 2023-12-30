@@ -1,5 +1,6 @@
 import sys
 from PIL import Image
+import os
 
 def add_alpha_channel(input_path):
     # Open the image
@@ -11,16 +12,20 @@ def add_alpha_channel(input_path):
     # Add the alpha channel to the original image
     img.putalpha(alpha_channel)
 
-    # Modify the output path
-    output_path = input_path.replace('.', '_4_channel.')
+    output_path = input_path.replace(".", ".4channel.")
 
-    # Save the result
     img.save(output_path)
+
     # Check the number of channels in the modified image
     modified_img = Image.open(output_path)
     num_channels = len(modified_img.getbands())
+    if num_channels == 4:
+        print(f"The modified image has {num_channels} channels.")
+        img.save(input_path)
+    else:
+        print("failed convertion")
 
-    print(f"The modified image has {num_channels} channels.")
+    os.remove(output_path)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
