@@ -48,6 +48,7 @@ void SceneNode::draw(mgl::ShaderProgram* optionalShader) {
 			renderConfig.sendUniforms(shaderToUse);
 			renderConfig.setupTextures();
 			renderConfig.sendTime(shaderToUse);
+			renderConfig.clipPlane(shaderToUse, glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 
 			glUniformMatrix4fv(shaderToUse->Uniforms[mgl::MODEL_MATRIX].index, 1, GL_FALSE, glm::value_ptr(this->worldMatrix));
 			//glUniform3fv(shaderToUse->Uniforms["lightDir"].index, 1, glm::value_ptr(lightDirection));

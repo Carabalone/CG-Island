@@ -4,9 +4,9 @@ in vec2 exTexcoord;
 
 out vec4 FragmentColor;
 
-uniform sampler2D depthMap;
+uniform sampler2D refractedTexture;
 
 void main(void)
 {
-    FragmentColor = vec4(vec3(texture(depthMap, gl_FragCoord.xy / vec2(800, 600)).r), 1.0);
+    FragmentColor = vec4(vec3(texture(refractedTexture, gl_FragCoord.xy / vec2(800, 600)).r), 1.0);
 }

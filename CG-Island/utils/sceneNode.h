@@ -20,6 +20,7 @@ public:
     std::vector<std::string> textureNames;
     bool transparent = false;
     bool useCallback = true;
+    bool clip = false;
     RenderConfig renderConfig;
 
 public:

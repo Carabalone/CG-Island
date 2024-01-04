@@ -8,6 +8,8 @@ uniform mat4 Matrix;
 uniform vec4 PieceColor;
 
 void main(void) {
+	gl_
+
   gl_Position = Matrix * inPosition;
   exColor = PieceColor;
 }

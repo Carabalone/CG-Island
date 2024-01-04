@@ -26,10 +26,12 @@
     <None Include="assets\shaders\silhouette.vert" />
     <None Include="assets\shaders\water-toon.frag" />
     <None Include="assets\shaders\water-toon.vert" />
-    <None Include="assets\shaders\depth.frag" />
-    <None Include="assets\shaders\depth.vert" />
-    <None Include="assets\shaders\screen.frag" />
-    <None Include="assets\shaders\screen.vert" />
+    <None Include="assets\shaders\depth-fs.glsl" />
+    <None Include="assets\shaders\depth-vs.glsl" />
+    <None Include="assets\shaders\screen-fs.glsl" />
+    <None Include="assets\shaders\screen-vs.glsl" />
+    <None Include="assets\shaders\refracted-fs.glsl" />
+    <None Include="assets\shaders\refracted-vs.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="utils\CameraManager.cpp">

@@ -30,6 +30,7 @@ const char BITANGENT_ATTRIBUTE[] = "inBitangent";
 const char COLOR_ATTRIBUTE[] = "inColor";
 
 const char TIME[] = "time";
+const char CLIP_PLANE[] = "clipPlane";
 ////////////////////////////////////////////////////////////////////////////////
 }  // namespace mgl
 

@@ -8,6 +8,7 @@
 struct RenderConfig {
     std::function<void(mgl::ShaderProgram*)> sendUniforms = defaultSendUniforms;
     std::function<void()> setupTextures = defaultSetupTextures;
+    bool clip = false;
 
     static float time;
 
@@ -21,6 +22,13 @@ struct RenderConfig {
         if (shader->isUniform(mgl::TIME) && time >= 0.0f) {
 			glUniform1f(shader->Uniforms[mgl::TIME].index, time);
         }
+	}
+
+    void clipPlane(mgl::ShaderProgram* shader, glm::vec4 plane) {
+		glUniform1i(shader->Uniforms["clip"].index, clip);
+        if (clip && shader->isUniform(mgl::CLIP_PLANE)) {
+			glUniform4f(shader->Uniforms[mgl::CLIP_PLANE].index, plane.x, plane.y, plane.z, plane.w);
+		}
 	}
 };
 

@@ -9,12 +9,14 @@ out vec2 exTexcoord;
 out vec3 exNormal;
 
 uniform mat4 ModelMatrix;
-uniform bool clip;
 
 uniform Camera {
    mat4 ViewMatrix;
    mat4 ProjectionMatrix;
 };
+
+const height = 0.0;
+vec4 clipPlane = vec4(0.0, -1.0, 0.0, height);
 
 void main(void)
 {
@@ -22,10 +24,8 @@ void main(void)
 	exTexcoord = inTexcoord;
 	exNormal = inNormal;
 
-	if (clip) {
-		gl_ClipDistance[0] = dot(ModelMatrix * vec4(inPosition, 1.0), vec4(0.0, 0.0, 1.0, 0.0));
-	}
+	gl_ClipDistance[0] = dot(ModelMatrix * vec4(inPosition, 1.0), clipPlane);
 
-	vec4 MCPosition = vec4(inPosition, 1.0);
-	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition; // camera space
+	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * MCPosition;
+
 }

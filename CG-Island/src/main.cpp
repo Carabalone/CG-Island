@@ -52,7 +52,9 @@ private:
 	float time = 0.0f;
 
 	//void createMesh(std::string name, std::string mesh_file);
-	mgl::Mesh* createMesh(std::string mesh_file);
+	mgl::Mesh* createMesh(std::string mesh_file, bool generateNormals = false);
+	SceneNode* createSilhouette(SceneNode node);
+	SceneNode* createLighthousePiece(const std::string& name, const std::string& fileName, const glm::vec3& color);
 	void createMeshes();
 	void createAllShaderPrograms();
 	void setNewProjectionMatrix(float fov);
@@ -77,17 +79,58 @@ void print_mat4(const glm::mat4& matrix, std::string matrixName) {
 
 ///////////////////////////////////////////////////////////////////////// MESHES
 
-mgl::Mesh* MyApp::createMesh(std::string mesh_file) {
+mgl::Mesh* MyApp::createMesh(std::string mesh_file, bool generateNormals) {
 	std::string mesh_dir = "assets/models/";
 	std::string mesh_fullname = mesh_dir + mesh_file;
 
 	Mesh = new mgl::Mesh();
+	if (generateNormals)
+		Mesh->generateSmoothNormals();
 	Mesh->joinIdenticalVertices();
 	Mesh->create(mesh_fullname);
 
 	return Mesh;
 
 	//sceneGraph.insert({ std::string(name), SceneNode(glm::mat4(1.0f), Shaders, Mesh) });
+}
+
+SceneNode* MyApp::createSilhouette(SceneNode node) {
+	mgl::Mesh* mesh = node.mesh;
+
+	auto silhouetteNode = new SceneNode("silhouette-" + node.name, glm::mat4(1.0f), nullptr, mesh);
+	silhouetteNode->modelMatrix = glm::scale(glm::vec3(1.013f));
+	silhouetteNode->shader = shaderManager.getShader("silhouette");
+	silhouetteNode->callback = new SilhouetteCallback();
+
+	RenderConfig rc = RenderConfig();
+	rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+
+	};
+
+	silhouetteNode->renderConfig = rc;
+
+	return silhouetteNode;
+}
+
+SceneNode* MyApp::createLighthousePiece(const std::string& name, const std::string& fileName, const glm::vec3& color) {
+	mgl::Mesh* lighthouseMesh = createMesh(fileName, true);
+
+	auto lighthouseNode = new SceneNode(name, glm::mat4(1.0f), nullptr, lighthouseMesh);
+	lighthouseNode->shader = shaderManager.getShader("cel-shading");
+	lighthouseNode->modelMatrix = glm::mat4(1.0f);
+
+	RenderConfig rc;
+	rc.sendUniforms = [color](mgl::ShaderProgram* shader) {
+		glUniform1i(shader->Uniforms["useTexture"].index, false);
+		glUniform1f(shader->Uniforms["glossiness"].index, 32.0f);
+		glUniform3f(shader->Uniforms["colorUniform"].index, color.x, color.y, color.z);
+	};
+
+	lighthouseNode->renderConfig = rc;
+
+	lighthouseNode->addChild(createSilhouette(*lighthouseNode));
+
+	return lighthouseNode;
 }
 
 void MyApp::createMeshes() {
@@ -132,13 +175,12 @@ void MyApp::createMeshes() {
 		gridNode.addTexture("depthMap");
 		gridNode.addTexture("surfaceDepth");
 		gridNode.addTexture("dudvMap");
+		gridNode.addTexture("refractedTexture");
 
 		RenderConfig rc = RenderConfig();
 
 		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
-			//glUniform1i(shader->Uniforms["useTexture"].index, false);
-			//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
-			glUniform1f(shader->Uniforms["resolution"].index, 800.0f / 600.0f);
+
 		};
 
 		gridNode.renderConfig = rc;
@@ -154,37 +196,54 @@ void MyApp::createMeshes() {
 		auto terrainNode = SceneNode("terrain", glm::mat4(1.0f), nullptr, terrain);
 		terrainNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -3.0f, 0.0f)) * glm::scale(glm::vec3(1.0f, 0.7f, 1.0f));
 		terrainNode.shader = shaderManager.getShader("cel-shading");
-		//terrainNode.shader = shaderManager.getShader("simple");
 		terrainNode.addTexture("sand_tex");
-		//terrainNode.addTexture("waveFoamNoise");
-		//terrainNode.addTexture("noise");
+		terrainNode.addTexture("normalMap");
 
 		RenderConfig rc = RenderConfig();
 		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
 			glUniform1i(shader->Uniforms["useTexture"].index, true);
 			glUniform1f(shader->Uniforms["glossiness"].index, 1000.0f);
-			//glUniform3f(shader->Uniforms["colorUniform"].index, 0.7f, 0.7f, 0.7f);
 		};
 
 		terrainNode.renderConfig = rc;
 
 		sceneGraph.insert({ "terrain", terrainNode });
+
+		sceneGraph.at("terrain").addChild(createSilhouette(terrainNode));
 	}
 
 	{
-
-		auto terrainSilhouette = new SceneNode("terrainSilhouette", glm::mat4(1.0f), nullptr, terrain);
-		terrainSilhouette->modelMatrix = glm::scale(glm::vec3(1.013f));
-		terrainSilhouette->shader = shaderManager.getShader("silhouette");
-		terrainSilhouette->callback = new SilhouetteCallback();
+		mgl::Mesh* lighthouseRed = createMesh("lighthouse-red.obj", true);
+		SceneNode lighthouseRedNode = SceneNode("lighthouse", glm::mat4(1.0f), nullptr, lighthouseRed);
+		lighthouseRedNode.modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(9.5f, -1.1f, 0.0f)) *
+			glm::rotate(glm::radians(1.5f), glm::vec3(0.0f, 0.0f, -1.0f)) *
+			glm::scale(glm::vec3(0.3f));
+		lighthouseRedNode.shader = shaderManager.getShader("cel-shading");
 
 		RenderConfig rc = RenderConfig();
 		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+			glUniform1i(shader->Uniforms["useTexture"].index, false);
+			glUniform1f(shader->Uniforms["glossiness"].index, 32.0f);
+			glUniform3f(shader->Uniforms["colorUniform"].index, 0.8f, 0.1f, 0.1f);
 		};
 
-		terrainSilhouette->renderConfig = rc;
+		lighthouseRedNode.renderConfig = rc;
 
-		sceneGraph.at("terrain").addChild(terrainSilhouette);
+		sceneGraph.insert({ "lighthouse", lighthouseRedNode });
+		sceneGraph.at("lighthouse").addChild(createSilhouette(lighthouseRedNode));
+
+		SceneNode* lighthouseWhiteNode = createLighthousePiece("lighthouseWhite", "lighthouse-white.obj", glm::vec3(0.8f, 0.8f, 0.8f));
+		SceneNode* lighthouseGrayNode = createLighthousePiece("lighthouseGray", "lighthouse-gray.obj", glm::vec3(0.5f, 0.5f, 0.5f));
+		SceneNode* lighthouseDarkGrayNode = createLighthousePiece("lighthouseDarkGray", "lighthouse-dark-gray.obj", glm::vec3(0.3f, 0.3f, 0.3f));
+		SceneNode* lighthouseYellowNode = createLighthousePiece("lighthouseYellow", "lighthouse-yellow.obj", glm::vec3(0.8f, 0.8f, 0.1f));
+
+		////// Add child nodes to the parent
+		sceneGraph.at("lighthouse").addChild(lighthouseWhiteNode);
+		sceneGraph.at("lighthouse").addChild(lighthouseGrayNode);
+		sceneGraph.at("lighthouse").addChild(lighthouseDarkGrayNode);
+		sceneGraph.at("lighthouse").addChild(lighthouseYellowNode);
+
+		
 	}
 
 }
@@ -242,17 +301,17 @@ void MyApp::setupTextures() {
 		exit(1);
 	}
 
-	mgl::DepthTexture* surfaceDepth = new mgl::DepthTexture();
 
-	surfaceDepth->create(800, 600);
+	mgl::RenderTargetTexture* refractedTexture = new mgl::RenderTargetTexture();
 
-	textureManager.addTexture("surfaceDepth", GL_TEXTURE5, 5, "surfaceDepth", reinterpret_cast<mgl::Texture*>(surfaceDepth), nullptr);
+	refractedTexture->create(800, 600);
 
-	if (!reinterpret_cast<mgl::Texture*>(surfaceDepth)) {
-		std::cout << "[DEBUG] reinterpret_cast from DepthTexture to Texture failed" << std::endl;
+	textureManager.addTexture("refractedTexture", GL_TEXTURE5, 5, "refractedTexture", reinterpret_cast<mgl::Texture*>(refractedTexture), nullptr);
+
+	if (!reinterpret_cast<mgl::Texture*>(refractedTexture)) {
+		std::cout << "[DEBUG] reinterpret_cast from RenderTargetTexture to Texture failed" << std::endl;
 		exit(1);
 	}
-
 
 	mgl::Texture2D* dudvMap = new mgl::Texture2D();
 
@@ -263,6 +322,16 @@ void MyApp::setupTextures() {
 	dudvMapSampler->create();
 
 	textureManager.addTexture("dudvMap", GL_TEXTURE6, 6, "dudvMap", dudvMap, dudvMapSampler);
+
+	mgl::Texture2D* normalMap = new mgl::Texture2D();
+
+	normalMap->load("assets/textures/sand_normal_map.png");
+
+	mgl::LinearSampler* normalMapSampler = new mgl::LinearSampler();
+
+	normalMapSampler->create();
+
+	textureManager.addTexture("normalMap", GL_TEXTURE7, 7, "normalMap", normalMap, normalMapSampler);
 
 }
 
@@ -361,15 +430,15 @@ void MyApp::scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 void MyApp::createAllShaderPrograms() {
 	shaderManager.addShader("cel-shading", createShaderProgram("cel-shading.vert",
 		"cel-shading.frag",
-		std::vector<std::string>{"lightDir", "lineColor", "tex1", "useTexture", "colorUniform", "glossiness"}
+		std::vector<std::string>{"lightDir", "lineColor", "tex1", "useTexture", "colorUniform", "glossiness", "normalMap", mgl::CLIP_PLANE, "clip"}
 	));
 
 	shaderManager.addShader("silhouette", createShaderProgram("silhouette.vert", "silhouette.frag",
-		std::vector<std::string>{}
+		std::vector<std::string>{mgl::CLIP_PLANE, "clip"}
 	));
 
 	shaderManager.addShader("water-toon", createShaderProgram("water-toon.vert", "water-toon.frag",
-		std::vector<std::string>{ "tex1", mgl::TIME, "depthMap", "waveFoamNoise", "surfaceDepth", "dudvMap" }
+		std::vector<std::string>{ "tex1", mgl::TIME, "depthMap", "waveFoamNoise", "dudvMap", "refractedTexture" }
 	));
 
 	shaderManager.addShader("simple", createShaderProgram("simple-vs.glsl", "simple-fs.glsl",
@@ -377,12 +446,16 @@ void MyApp::createAllShaderPrograms() {
 	));
 
 	shaderManager.addShader("depth", createShaderProgram("depth-vs.glsl", "depth-fs.glsl",
-		std::vector<std::string>{ }
+		std::vector<std::string>{ "clip" }
 	));
 
 	shaderManager.addShader("screen", createShaderProgram("screen-vs.glsl", "screen-fs.glsl",
-		std::vector<std::string>{ "depthMap" }
+		std::vector<std::string>{ "refractedTexture" }
 	));
+
+	/*shaderManager.addShader("refracted", createShaderProgram("refracted-vs.glsl", "refracted-fs.glsl",
+				std::vector<std::string>{ }
+	));*/
 }
 ///////////////////////////////////////////////////////////////////////// CAMERA
 
@@ -443,41 +516,47 @@ void MyApp::drawScene() {
 	mgl::TextureManager& textureManager = mgl::TextureManager::getInstance();
 
 	mgl::DepthTexture* depthTexture = reinterpret_cast<mgl::DepthTexture*>(textureManager.getTexture("depthMap"));
-	mgl::DepthTexture* surfaceDepth = reinterpret_cast<mgl::DepthTexture*>(textureManager.getTexture("surfaceDepth"));
-	if (!(depthTexture && surfaceDepth)) {
-		std::cout << "[DEBUG] reinterpret_cast from Texture to DepthTexture in DrawScene() failed" << std::endl;
+	mgl::RenderTargetTexture* refractedTexture = reinterpret_cast<mgl::RenderTargetTexture*>(textureManager.getTexture("refractedTexture"));
+	if (!(depthTexture && refractedTexture)) {
+		std::cout << "[DEBUG] reinterpret_cast from Texture to RTT in DrawScene() failed" << std::endl;
 		exit(1);
 	}
 
 	mgl::ShaderProgram* depthShader = shaderManager.getShader("depth");
 	mgl::ShaderProgram* screenShader = shaderManager.getShader("screen");
 
+	// first pass to render the depth map
 	depthTexture->bindFramebuffer();
 
 	for (auto& node : sceneGraph) {
 		if (node.second.name == "grid") {
 			continue;
 		}
+
+		node.second.renderConfig.clip = true;
 		node.second.draw(depthShader);
+		node.second.renderConfig.clip = false;
 	}
 
 	depthTexture->unbindFramebuffer();
 
-	surfaceDepth->bindFramebuffer();
+	// second pass to render the refracted texture
+	refractedTexture->bindFramebuffer();
 
+	glEnable(GL_CLIP_DISTANCE0);
 	for (auto& node : sceneGraph) {
-		if (node.second.name == "grid") {
-			node.second.useCallback = false;
-			node.second.draw(depthShader);
-			node.second.useCallback = true;
-		}
-		node.second.draw(depthShader);
+		node.second.renderConfig.clip = true;
+		node.second.draw();
+		node.second.renderConfig.clip = false;
 	}
+	glDisable(GL_CLIP_DISTANCE0);
+	refractedTexture->unbindFramebuffer();
 
-	surfaceDepth->unbindFramebuffer();
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+	// third pass to render the scene
 	for (auto& node : sceneGraph) {
-		if (node.second.transparent) {
+		if (node.second.transparent) { // draw transparent objects last
 			continue;
 		}
 		node.second.draw();
