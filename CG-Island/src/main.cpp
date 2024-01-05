@@ -146,7 +146,7 @@ void MyApp::createMeshes() {
 
 		torusConfig.sendUniforms = [](mgl::ShaderProgram* shader) {
 			glUniform1i(shader->Uniforms["useTexture"].index, false);
-			glUniform1f(shader->Uniforms["glossiness"].index, 32.0f);
+			glUniform1f(shader->Uniforms["glossiness"].index, 16.0f);
 			glUniform3f(shader->Uniforms["colorUniform"].index, 1.0f, 0.0f, 0.0f);
 		};
 
@@ -243,7 +243,56 @@ void MyApp::createMeshes() {
 		sceneGraph.at("lighthouse").addChild(lighthouseDarkGrayNode);
 		sceneGraph.at("lighthouse").addChild(lighthouseYellowNode);
 
-		
+	}
+
+	{
+		mgl::Mesh* rock1 = createMesh("rock_1.obj", true);
+
+		SceneNode rock1Node = SceneNode("rock1", glm::mat4(1.0f), nullptr, rock1);
+
+		rock1Node.modelMatrix = glm::translate(glm::vec3(-4.0f, -2.0f, -4.0f)) *
+			glm::rotate(glm::radians(-15.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+			glm::scale(glm::vec3(0.02f));
+
+		rock1Node.shader = shaderManager.getShader("cel-shading");
+		rock1Node.addTexture("rock_1");
+
+		RenderConfig rc = RenderConfig();
+
+		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+			glUniform1i(shader->Uniforms["useTexture"].index, true);
+			glUniform1f(shader->Uniforms["glossiness"].index, 1000.0f);
+		};
+
+		rock1Node.renderConfig = rc;
+
+		sceneGraph.insert({ "rock1", rock1Node });
+
+		sceneGraph.at("rock1").addChild(createSilhouette(rock1Node));
+	}
+
+	{
+		mgl::Mesh* rock2 = createMesh("rock_2.obj", true);
+
+		SceneNode rock2Node = SceneNode("rock2", glm::mat4(1.0f), nullptr, rock2);
+
+		rock2Node.modelMatrix = glm::translate(glm::vec3(-6.0f, -1.0f, 5.0f)) *
+			glm::rotate(glm::radians(-15.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
+			glm::scale(glm::vec3(20.0f));
+		rock2Node.shader = shaderManager.getShader("cel-shading");
+		rock2Node.addTexture("rock_2");
+
+		RenderConfig rc = RenderConfig();
+
+		rc.sendUniforms = [](mgl::ShaderProgram* shader) {
+			glUniform1i(shader->Uniforms["useTexture"].index, true);
+			glUniform1f(shader->Uniforms["glossiness"].index, 1000.0f);
+		};
+		rock2Node.renderConfig = rc;
+
+		sceneGraph.insert({ "rock2", rock2Node });
+
+		sceneGraph.at("rock2").addChild(createSilhouette(rock2Node));
 	}
 
 }
@@ -332,6 +381,27 @@ void MyApp::setupTextures() {
 	normalMapSampler->create();
 
 	textureManager.addTexture("normalMap", GL_TEXTURE7, 7, "normalMap", normalMap, normalMapSampler);
+
+
+	mgl::Texture2D* rock_1 = new mgl::Texture2D();
+
+	rock_1->load("assets/textures/rock_1.png");
+
+	mgl::LinearSampler* rock_1Sampler = new mgl::LinearSampler();
+
+	rock_1Sampler->create();
+
+	textureManager.addTexture("rock_1", GL_TEXTURE8, 8, "tex1", rock_1, rock_1Sampler);
+
+	mgl::Texture2D* rock_2 = new mgl::Texture2D();
+
+	rock_2->load("assets/textures/rock_2.png");
+
+	mgl::LinearSampler* rock_2Sampler = new mgl::LinearSampler();
+
+	rock_2Sampler->create();
+
+	textureManager.addTexture("rock_2", GL_TEXTURE9, 9, "tex1", rock_2, rock_2Sampler);
 
 }
 
