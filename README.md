@@ -1,3 +1,6 @@
+# Stylized Water scene for Computer Graphics for Games
+![stylized scene with light blue water, a lighthouse in an islands and some rocks a bit far away from the shore](./cgj_print.png)
+
 # Dependencies Instructions
 [Download dependencies](https://drive.google.com/file/d/1wOciHD5nIUU5JmBiFdTUDR8-Xo5QZBfb/view?usp=drive_link)
 
